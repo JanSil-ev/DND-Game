@@ -1,0 +1,1 @@
+export { NpcPage } from './NpcPage'
