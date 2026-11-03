@@ -11,6 +11,7 @@ import { ClubPage } from "../../pages/club/ClubPage";
 import { NpcPage } from "../../pages/npc/NpcPage";
 import { CharactersPage } from "../../pages/characters/CharactersPage";
 import { InventoryPage } from "../../pages/inventory/InventoryPage";
+import { Dice } from "../../pages/dice/Dice";
 
 
 export function AppRouter() {
@@ -24,6 +25,7 @@ export function AppRouter() {
     <Route path={routes.map} element={<MapPage />} />
     <Route path={routes.notes} element={<NotePage />} />
     <Route path={routes.inventory} element={<InventoryPage />} />
+    <Route path={routes.dice} element={<Dice/>} />
     </Route>
 </Routes>
   );

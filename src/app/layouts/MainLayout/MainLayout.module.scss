@@ -1,46 +1,82 @@
 .shell {
-  background-color: #fff;
+  background-color: #f5f3ed;
 }
 
 .header {
-  background-color: #fff;
-  border-bottom: 1px solid #e9ecef;
+  color: #f7f3e9;
+  background-color: #202a25;
+  border-bottom: 1px solid rgb(215 183 119 / 32%);
+  box-shadow: 0 4px 18px rgb(23 30 25 / 12%);
 }
 
 .brand {
-  color: #212529;
-  letter-spacing: -0.02em;
+  color: #f7f3e9;
+  font-family: Georgia, 'Times New Roman', serif;
+  letter-spacing: 0.025em;
 }
 
 .navbar {
   padding: 1rem 0.75rem;
-  background-color: #f8f9fa;
-  border-right: 1px solid #e9ecef;
+  background-color: #f5f2e9;
+  border-right: 1px solid #e4dcc8;
+}
+
+.navbar :global(.mantine-NavLink-root) {
+  border-radius: 0.6rem;
+  color: #4b5148;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.navbar :global(.mantine-NavLink-root:hover) {
+  background-color: #e9e3d5;
+}
+
+.navbar :global(.mantine-NavLink-root[data-active]) {
+  color: #f5e9c9;
+  background-color: #35463a;
+  font-weight: 600;
 }
 
 .navItem {
   display: block;
   text-decoration: none;
-  color: #495057;
+  color: #4b5148;
   border-radius: var(--mantine-radius-sm);
   overflow: hidden;
 }
 
 .navLink {
   border-radius: var(--mantine-radius-sm);
-  transition: background-color 120ms ease, color 120ms ease;
+  transition: background-color 150ms ease, color 150ms ease;
 }
 
 .navItem:hover .navLink {
-  background-color: #e9ecef;
+  background-color: #e9e3d5;
 }
 
 .navLink[data-active] {
-  color: #1971c2;
-  background-color: #e7f5ff;
+  color: #f5e9c9;
+  background-color: #35463a;
   font-weight: 600;
 }
 
 .main {
-  background-color: #fff;
+  min-width: 0;
+  background:
+    radial-gradient(ellipse at 92% 8%, rgb(200 170 113 / 8%), transparent 28rem),
+    #f5f3ed;
+}
+
+@media (max-width: 560px) {
+  .header :global(.mantine-Group-root) {
+    padding-inline: 0.75rem;
+  }
+
+  .navbar {
+    padding: 0.85rem 0.65rem;
+  }
+
+  .main {
+    padding: 0.65rem;
+  }
 }

@@ -2,6 +2,7 @@ import { AppShell, Stack } from "@mantine/core";
 
 import { navigation } from "../../config/navigation";
 import { NavigationItem } from "../NavigationItem";
+import styles from "../../MainLayout.module.scss";
 
 interface AppNavbarProps {
   onNavigate: () => void;
@@ -9,7 +10,7 @@ interface AppNavbarProps {
 
 export function AppNavbar({ onNavigate }: AppNavbarProps) {
   return (
-    <AppShell.Navbar>
+    <AppShell.Navbar className={styles.navbar}>
       <Stack gap="xs">
         {navigation.map((item) => (
           <NavigationItem

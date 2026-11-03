@@ -1,0 +1,60 @@
+.page {
+  width: min(100%, 68rem);
+  min-height: min(32rem, calc(100dvh - 8rem));
+  margin: 0 auto;
+  padding: clamp(1.25rem, 5vw, 3.5rem);
+  overflow: hidden;
+  border: 1px solid #e4dcc8;
+  border-radius: clamp(0.9rem, 2vw, 1.4rem);
+  color: #292e28;
+  background:
+    radial-gradient(ellipse at 100% 0, rgb(183 151 91 / 12%), transparent 26rem),
+    linear-gradient(145deg, rgb(255 254 249 / 97%), rgb(245 241 229 / 96%));
+  box-shadow: 0 1.25rem 3.5rem rgb(44 43 34 / 8%);
+}
+
+.header {
+  max-width: 45rem;
+  padding-bottom: clamp(1.25rem, 4vw, 2rem);
+  border-bottom: 1px solid #e6decb;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #927547;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0.45rem 0 0;
+  color: #26352b;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2.2rem, 8vw, 4rem);
+  font-weight: 500;
+  letter-spacing: -0.055em;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+.description {
+  max-width: 38rem;
+  margin: 0.85rem 0 0;
+  color: #6d7065;
+  font-size: clamp(0.9rem, 2vw, 1.05rem);
+  line-height: 1.7;
+}
+
+.content {
+  padding-top: clamp(1.25rem, 4vw, 2rem);
+}
+
+@media (max-width: 560px) {
+  .page {
+    min-height: calc(100dvh - 6rem);
+    padding: 1.25rem 1rem;
+    border-radius: 0.9rem;
+  }
+}

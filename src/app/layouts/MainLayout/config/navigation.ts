@@ -8,5 +8,6 @@ export const navigation = [
   { label: "NPC", path: routes.npc },
   { label: "Инвентарь", path: routes.inventory },
   { label: "Заметки", path: routes.notes },
+  { label: "Кости", path: routes.dice },
 ] as const;
 

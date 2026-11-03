@@ -5,5 +5,6 @@ export const routes = {
   club: '/club',
   map: '/map',
   notes: '/notes',
-  inventory: '/inventory'
+  inventory: '/inventory',
+  dice: '/dice',
 } as const;

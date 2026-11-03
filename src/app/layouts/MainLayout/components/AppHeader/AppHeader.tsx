@@ -16,7 +16,7 @@ export function AppHeader({ opened, onToggle }: AppHeaderProps) {
           size="sm"
           aria-label={opened ? "Закрыть меню" : "Открыть меню"}
         />
-        <Text fw={700} size="md">
+        <Text className={styles.brand} fw={700} size="md">
           3/5 DND Game
         </Text>
       </Group>

@@ -1,8 +1,11 @@
+import { PageFrame } from '../../app/layouts/PageFrame/PageFrame';
+
 export function CharactersPage() {
   return (
-    <div>
-      <h1>Characters Page</h1>
-      <p>This is the Characters page.</p>
-    </div>
+    <PageFrame
+      eyebrow="Герои кампании"
+      title="Персонажи"
+      description="Спутники по приключениям банды 3.5."
+    />
   );
 }

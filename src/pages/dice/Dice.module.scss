@@ -1,0 +1,104 @@
+.dicePanel {
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border: 1px solid rgb(226 209 168 / 27%);
+  border-radius: 1rem;
+  color: #f7f3e9;
+  background:
+    radial-gradient(ellipse at 50% 100%, rgb(183 142 76 / 18%), transparent 22rem),
+    linear-gradient(145deg, #26342b, #1d2822);
+  box-shadow: 0 1rem 2.5rem rgb(35 42 35 / 14%);
+}
+
+.selectorLabel {
+  margin: 0 0 0.9rem;
+  color: #cbb98f;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.diceSelector {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.dieOption {
+  display: grid;
+  min-width: 0;
+  min-height: 4.25rem;
+  justify-items: center;
+  align-content: center;
+  gap: 0.2rem;
+  border: 1px solid rgb(240 229 204 / 17%);
+  border-radius: 0.65rem;
+  color: #ded8c8;
+  background: rgb(255 255 255 / 4%);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition:
+    border-color 150ms ease,
+    color 150ms ease,
+    background-color 150ms ease,
+    transform 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dieOption:hover {
+  border-color: rgb(215 183 119 / 65%);
+  color: #fff4d8;
+  transform: translateY(-2px);
+}
+
+.dieOption[aria-pressed='true'] {
+  border-color: #d7b777;
+  color: #262d26;
+  background: #d7b777;
+  box-shadow: 0 0 1.2rem rgb(215 183 119 / 18%);
+}
+
+.dieOption:focus-visible {
+  outline: 3px solid #e4c990;
+  outline-offset: 3px;
+}
+
+.optionIcon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.rollArea {
+  display: grid;
+  min-height: clamp(15rem, 40vw, 21rem);
+  padding-top: 1rem;
+  place-items: center;
+}
+
+@media (max-width: 720px) {
+  .diceSelector {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .dicePanel {
+    padding: 1rem;
+  }
+
+  .diceSelector {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  .dieOption {
+    min-height: 3.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dieOption {
+    transition: none;
+  }
+}

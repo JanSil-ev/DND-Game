@@ -1,7 +1,11 @@
+import { PageFrame } from '../../app/layouts/PageFrame/PageFrame';
+
 export function NotePage() {
   return (
-    <div>
-      <h1>Notes Page</h1>
-    </div>
+    <PageFrame
+      eyebrow="Память приключения"
+      title="Заметки"
+      description="Хроника событий, зацепки и мысли, которые не стоит терять."
+    />
   );
 }

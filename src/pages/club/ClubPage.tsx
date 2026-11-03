@@ -1,8 +1,11 @@
+import { PageFrame } from '../../app/layouts/PageFrame/PageFrame';
+
 export function ClubPage() {
   return (
-    <div>
-      <h1>Club Page</h1>
-      <p>This is the Club page content.</p>
-    </div>
+    <PageFrame
+      eyebrow="База банды"
+      title="Клуб"
+      description="Место, где собирается команда, делится новостями и строит планы."
+    />
   );
 }

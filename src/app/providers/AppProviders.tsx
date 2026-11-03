@@ -1,13 +1,15 @@
 import { MantineProvider } from '@mantine/core';
 import { BrowserRouter } from 'react-router';
 import type { PropsWithChildren } from 'react';
-
-
+import { Provider } from 'react-redux';
+import { store } from '../store/store';
 
 export function AppProviders({ children }: PropsWithChildren) {
   return (
     <MantineProvider defaultColorScheme="light">
-      <BrowserRouter>{children}</BrowserRouter>
+      <Provider store={store}>
+        <BrowserRouter>{children}</BrowserRouter>
+      </Provider>
     </MantineProvider>
   );
 }

@@ -1,7 +1,11 @@
+import { PageFrame } from '../../app/layouts/PageFrame/PageFrame';
+
 export function MapPage() {
   return (
-    <div>
-      <h1>Map Page</h1>
-    </div>
+    <PageFrame
+      eyebrow="Места и маршруты"
+      title="Карта"
+      description="Отмечайте знакомые места и прокладывайте путь к новым приключениям."
+    />
   );
 }
