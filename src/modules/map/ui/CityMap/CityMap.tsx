@@ -221,7 +221,7 @@ export function CityMap() {
                 >
                   <img
                     key={imageRetry}
-                    src={`/maps/waterdeep.jpg?attempt=${imageRetry}`}
+                    src={`${import.meta.env.BASE_URL}maps/waterdeep.jpg?attempt=${imageRetry}`}
                     alt="Подробная карта города Вотердип"
                     className={styles.image}
                     draggable={false}
