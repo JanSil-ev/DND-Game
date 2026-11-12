@@ -39,7 +39,7 @@ export function HomePage() {
 
         <footer className={styles.footer}>
           <span>Банда 3.5</span>
-          <span>История пишется бросок за броском</span>
+          <span>БЛА бла бла</span>
         </footer>
       </Container>
     </div>

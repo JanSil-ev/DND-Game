@@ -1,12 +1,10 @@
 .page {
-  min-height: 100%;
-  margin: -1rem;
-  padding: clamp(1rem, 3vw, 2.5rem);
+  width: min(100%, var(--page-max-width));
+  min-height: min(32rem, calc(100dvh - 7rem));
+  margin: 0 auto;
+  padding: clamp(1.25rem, 5vw, 3.5rem);
   overflow: hidden;
-  color: #252a25;
-  background:
-    radial-gradient(ellipse at 92% 8%, rgb(200 170 113 / 12%), transparent 28rem),
-    #f5f3ed;
+  color: var(--color-ink);
 }
 
 .content {
@@ -59,7 +57,6 @@
   max-width: 39rem;
 }
 
-.eyebrow,
 .sectionEyebrow {
   margin: 0;
   color: #bda576;
@@ -67,32 +64,6 @@
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-}
-
-.heroTitle {
-  display: flex;
-  align-items: baseline;
-  gap: 0.3em;
-  margin: 1.2rem 0 0.8rem;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(4.5rem, 10vw, 7.5rem);
-  font-weight: 500;
-  letter-spacing: -0.075em;
-  line-height: 0.95;
-}
-
-.heroTitle span {
-  color: #d7b777;
-  font-size: 0.65em;
-  letter-spacing: -0.06em;
-}
-
-.heroDescription {
-  max-width: 30rem;
-  margin: 1.2rem 0 0;
-  color: #c6ccc3;
-  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
-  line-height: 1.7;
 }
 
 .heroActions {
@@ -319,10 +290,53 @@
   }
 }
 
+@media (min-width: 561px) and (max-width: 1100px) {
+  .hero {
+    display: grid;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    align-items: start;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+  }
+
+  .heroContent {
+    max-width: none;
+  }
+
+  .heroArtwork {
+    position: relative;
+    top: auto;
+    right: auto;
+    justify-self: end;
+    width: clamp(8rem, 18vw, 10rem);
+    transform: none;
+  }
+
+  .heroIndex {
+    display: none;
+  }
+
+  .navigationGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1101px) and (max-width: 1350px) {
+  .heroContent {
+    max-width: calc(100% - 14rem);
+  }
+
+  .heroArtwork {
+    right: 1.5rem;
+    width: clamp(10rem, 16vw, 12rem);
+  }
+}
+
 @media (max-width: 560px) {
   .page {
-    margin: -0.65rem;
-    padding: 3rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom));
+    min-height: calc(100dvh - 7rem);
+    padding: clamp(1.1rem, 5vw, 1.5rem) clamp(0.75rem, 4vw, 1rem);
   }
 
   .content {
@@ -332,21 +346,12 @@
   .hero {
     min-height: 0;
     align-items: flex-start;
-    padding: 1.5rem 1.2rem 7.8rem;
+    padding: 1.25rem 1rem;
     border-radius: 0.9rem;
   }
 
-  .eyebrow {
-    max-width: 18rem;
-    font-size: 0.59rem;
-    letter-spacing: 0.15em;
-    line-height: 1.6;
-  }
-
-  .heroTitle {
-    gap: 0.25em;
-    margin: 0.85rem 0 0;
-    font-size: clamp(3.4rem, 15vw, 4.5rem);
+  .heroContent {
+    padding-bottom: 3.75rem;
   }
 
   .heroActions {
@@ -363,9 +368,9 @@
 
   .heroArtwork {
     top: auto;
-    right: 1.2rem;
-    bottom: 0.6rem;
-    width: 7rem;
+    right: 0.85rem;
+    bottom: 0.35rem;
+    width: 6rem;
     transform: none;
   }
 
@@ -451,10 +456,6 @@
 }
 
 @media (max-width: 360px) {
-  .heroTitle {
-    font-size: 3.25rem;
-  }
-
   .primaryAction,
   .secondaryAction {
     padding-inline: 0.65rem;

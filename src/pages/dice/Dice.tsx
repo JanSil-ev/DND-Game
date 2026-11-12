@@ -13,7 +13,7 @@ export function Dice() {
     <PageFrame
       eyebrow="Случай решает"
       title="Кости судьбы"
-      description="Выбери кость и брось её на стол. Результат уже ждёт своего часа."
+      description="Кидай дерьмо!"
     >
       <section className={styles.dicePanel} aria-label="Бросок кубика">
         <p className={styles.selectorLabel}>Выбери свою кость</p>

@@ -1,4 +1,5 @@
 import type { PropsWithChildren } from 'react';
+import { PageHeading } from '../PageHeading/PageHeading';
 import styles from './PageFrame.module.scss';
 
 interface PageFrameProps extends PropsWithChildren {
@@ -15,11 +16,12 @@ export function PageFrame({
 }: PageFrameProps) {
   return (
     <section className={styles.page} aria-label={title}>
-      <header className={styles.header}>
-        <p className={styles.eyebrow}>{eyebrow}</p>
-        <h1 className={styles.title}>{title}</h1>
-        <p className={styles.description}>{description}</p>
-      </header>
+      <PageHeading
+        className={styles.header}
+        description={description}
+        eyebrow={eyebrow}
+        title={title}
+      />
       {children && <div className={styles.content}>{children}</div>}
     </section>
   );

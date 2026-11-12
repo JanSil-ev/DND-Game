@@ -16,10 +16,10 @@ export function MainLayout() {
       header={{ height: 56 }}
       navbar={{
         width: 260,
-        breakpoint: "sm",
+        breakpoint: "40em",
         collapsed: { mobile: !opened },
       }}
-      padding="md"
+      padding={0}
       className={styles.shell}
     >
       <AppHeader opened={opened} onToggle={toggle} />

@@ -11,9 +11,11 @@ export function AppHeader({ opened, onToggle }: AppHeaderProps) {
     <AppShell.Header className={styles.header}>
       <Group h="100%" px="md">
         <Burger
+          className={styles.burger}
           opened={opened}
           onClick={onToggle}
           size="sm"
+          color="#f7f3e9"
           aria-label={opened ? "Закрыть меню" : "Открыть меню"}
         />
         <Text className={styles.brand} fw={700} size="md">

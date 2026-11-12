@@ -1,0 +1,41 @@
+.heading {
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #d7b777;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.18em;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0.45rem 0 0;
+  color: #f7f3e9;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 500;
+  letter-spacing: -0.055em;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+.description {
+  max-width: 38rem;
+  margin: 0.85rem 0 0;
+  color: #c6ccc3;
+  font-size: clamp(0.9rem, 2vw, 1.05rem);
+  line-height: 1.7;
+}
+
+.divider {
+  display: block;
+  width: 3.5rem;
+  height: 2px;
+  margin-top: 1.2rem;
+  background: linear-gradient(90deg, #d7b777, rgb(215 183 119 / 12%));
+}

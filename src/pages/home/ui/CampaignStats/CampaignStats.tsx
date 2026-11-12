@@ -6,7 +6,7 @@ export function CampaignStats() {
   const stats = useAppSelector((state) => state.campaignStats.stats);
 
   return (
-    <SimpleGrid className={styles.statsGrid} cols={{ base: 3 }}>
+    <SimpleGrid className={styles.statsGrid} cols={{ base: 2, xs: 3 }}>
       {stats.map((stat) => (
         <Paper
           className={styles.statCard}

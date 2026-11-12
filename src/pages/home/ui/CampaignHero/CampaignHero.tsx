@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { routes } from '../../../../app/router/routes';
+import { PageHeading } from '../../../../app/layouts/PageHeading/PageHeading';
 import styles from '../../HomePage.module.scss';
 import { DiceRoller } from '../../../../features/dice-roller';
 
@@ -7,11 +8,7 @@ export function CampaignHero() {
   return (
     <section className={styles.hero}>
       <div className={styles.heroContent}>
-        <p className={styles.eyebrow}>Хроники одной большой истории</p>
-        <h1 className={styles.heroTitle}>
-          Банда
-          <span>3.5</span>
-        </h1>
+        <PageHeading eyebrow="Хроники одной большой истории" title="Банда 3.5" />
 
         <div className={styles.heroActions}>
           <Link className={styles.primaryAction} to={routes.characters}>

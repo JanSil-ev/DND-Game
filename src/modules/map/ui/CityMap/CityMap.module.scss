@@ -1,0 +1,700 @@
+.layout {
+  --map-canvas: rgb(245 243 237);
+  --map-surface: rgb(255 254 249);
+  --map-surface-muted: rgb(245 241 229);
+  --map-ink: rgb(41 46 40);
+  --map-forest: rgb(38 53 43);
+  --map-muted: rgb(109 112 101);
+  --map-border: rgb(228 220 200);
+  --map-accent: rgb(215 183 119);
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 19rem;
+  align-items: start;
+  gap: 1rem;
+  color: var(--map-ink);
+}
+
+.viewer,
+.sidebar {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--map-border);
+  border-radius: 1rem;
+  background: var(--map-surface);
+  box-shadow: 0 0.75rem 2rem rgb(44 43 34 / 7%);
+}
+
+.viewer {
+  container-type: inline-size;
+  display: flex;
+  min-height: 28rem;
+  flex-direction: column;
+  background: #19221e;
+}
+
+.mapToolbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  min-height: 4.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid rgb(215 183 119 / 20%);
+  color: #f7f3e9;
+  background: linear-gradient(110deg, #202a25, #28352d);
+}
+
+.mapEyebrow,
+.sidebarEyebrow {
+  margin: 0;
+  color: var(--map-accent);
+  font-size: 0.62rem;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.mapTitle {
+  margin: 0.15rem 0 0;
+  color: #f7f3e9;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+
+.toolbarActions {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.addLocationButton,
+.sidebarAddButton,
+.saveLocationButton {
+  min-height: 2.45rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid rgb(215 183 119 / 48%);
+  border-radius: 0.6rem;
+  color: #f7f3e9;
+  background: rgb(215 183 119 / 12%);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 650;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.addLocationButton:hover,
+.sidebarAddButton:hover,
+.saveLocationButton:hover {
+  border-color: var(--map-accent);
+  background: rgb(215 183 119 / 22%);
+}
+
+.addLocationButton[data-active='true'],
+.sidebarAddButton[data-active='true'] {
+  border-color: #e4c990;
+  color: #292e28;
+  background: #d7b777;
+}
+
+.controls {
+  flex: 0 0 auto;
+  padding: 0.25rem;
+  border: 1px solid rgb(215 183 119 / 22%);
+  border-radius: 0.75rem;
+  background: rgb(0 0 0 / 14%);
+}
+
+.control,
+.closeButton {
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 1px solid rgb(215 183 119 / 24%);
+  border-radius: 0.55rem;
+  color: #f7f3e9;
+  background: rgb(255 255 255 / 5%);
+  font-size: 1.25rem;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.control:hover,
+.closeButton:hover {
+  border-color: var(--map-accent);
+  color: #fff4d8;
+  background: rgb(215 183 119 / 14%);
+}
+
+.mapViewport {
+  position: relative;
+  min-height: 22rem;
+  flex: 1;
+  overflow: hidden;
+  background-color: #292b24;
+  background-image:
+    radial-gradient(ellipse at center, rgb(215 183 119 / 7%), transparent 65%),
+    linear-gradient(45deg, rgb(255 255 255 / 2%) 25%, transparent 25% 75%, rgb(255 255 255 / 2%) 75%);
+  background-size:
+    auto,
+    24px 24px;
+}
+
+.mapWrapper {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 22rem;
+}
+
+.mapContent {
+  max-width: 100%;
+}
+
+.map {
+  position: relative;
+  width: min(1000px, 100cqi);
+  overflow: hidden;
+  background: var(--map-surface-muted);
+  box-shadow: 0 0 2.5rem rgb(0 0 0 / 25%);
+}
+
+.map[data-adding='true'] {
+  cursor: crosshair;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.map[data-error='true'] .image {
+  visibility: hidden;
+}
+
+.controls :global(.mantine-ActionIcon-root):focus-visible,
+.closeButton:focus-visible,
+.locationItem:focus-visible,
+.filter:focus-visible,
+.marker:focus-visible,
+.retryButton:focus-visible {
+  outline: 3px solid #e4c990;
+  outline-offset: 3px;
+}
+
+.marker {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  padding: 0;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 0;
+  background: #ffffff;
+  cursor: pointer;
+  transition:
+    width 120ms ease,
+    height 120ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.markerIcon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: currentColor;
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 75%));
+  pointer-events: none;
+}
+
+.marker::before {
+  position: absolute;
+  width: var(--marker-hit-size);
+  height: var(--marker-hit-size);
+  border-radius: 50%;
+  content: '';
+}
+
+.pendingMarker {
+  position: absolute;
+  z-index: 3;
+  width: 0.65rem;
+  height: 0.65rem;
+  transform: translate(-50%, -50%);
+  border: 2px solid #fff9e9;
+  border-radius: 50%;
+  background: #a9493d;
+  box-shadow:
+    0 0 0 0.25rem rgb(169 73 61 / 28%),
+    0 1px 5px rgb(0 0 0 / 65%);
+  pointer-events: none;
+}
+
+.marker[data-selected='true'] {
+  z-index: 2;
+}
+
+.mapHint {
+  margin: 0;
+  padding: 0.6rem 1rem;
+  color: #c9c0aa;
+  background: #202a25;
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.mapError {
+  position: absolute;
+  z-index: 3;
+  inset: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 1.5rem;
+  border: 1px solid rgb(215 183 119 / 35%);
+  border-radius: 0.8rem;
+  color: #f7f3e9;
+  background: rgb(25 34 30 / 94%);
+  text-align: center;
+}
+
+.mapError span {
+  max-width: 26rem;
+  color: #c9c0aa;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.retryButton {
+  min-height: 2.6rem;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid rgb(215 183 119 / 45%);
+  border-radius: 0.55rem;
+  color: #f7f3e9;
+  background: rgb(215 183 119 / 12%);
+  cursor: pointer;
+}
+
+.sidebar {
+  display: flex;
+  max-height: 52rem;
+  flex-direction: column;
+}
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1rem 0.85rem;
+  border-bottom: 1px solid var(--map-border);
+}
+
+.sidebarTitle {
+  margin-top: 0.25rem;
+  color: var(--map-forest);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.locationCount {
+  display: grid;
+  min-width: 2rem;
+  height: 2rem;
+  padding-inline: 0.45rem;
+  place-items: center;
+  border: 1px solid rgb(215 183 119 / 48%);
+  border-radius: 999px;
+  color: #725b31;
+  background: #f4ead2;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.sidebarAddButton {
+  margin: 0.85rem 0.9rem 0;
+  border-color: #516451;
+  color: #f7f3e9;
+  background: #35463a;
+}
+
+.sidebarAddButton:hover {
+  border-color: #73816a;
+  background: #425444;
+}
+
+.sidebarAddButton[data-active='true'] {
+  border-color: #c5a960;
+  color: #292e28;
+  background: #d7b777;
+}
+
+.storageError {
+  margin: 0.7rem 0.9rem 0;
+  color: #8d3932;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.searchLabel {
+  margin: 0.9rem 0.9rem 0.35rem;
+  color: var(--map-muted);
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.search {
+  min-width: 0;
+  min-height: 2.75rem;
+  margin-inline: 0.9rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--map-border);
+  border-radius: 0.6rem;
+  outline: none;
+  color: var(--map-ink);
+  background: #fff;
+  font-size: 0.85rem;
+}
+
+.search::placeholder {
+  color: #888778;
+}
+
+.search:focus-visible {
+  border-color: #ad9058;
+  box-shadow: 0 0 0 3px rgb(215 183 119 / 22%);
+}
+
+.filters {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.75rem 0.9rem 0.65rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.filter {
+  min-height: 2rem;
+  flex: 0 0 auto;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--map-border);
+  border-radius: 999px;
+  color: #5e6158;
+  background: var(--map-surface);
+  cursor: pointer;
+  font-size: 0.72rem;
+  transition:
+    border-color 150ms ease,
+    color 150ms ease,
+    background-color 150ms ease;
+}
+
+.filter[data-active='true'] {
+  border-color: var(--map-forest);
+  color: #f7f3e9;
+  background: var(--map-forest);
+}
+
+.locationList {
+  display: grid;
+  min-height: 0;
+  flex: 1 1 5rem;
+  gap: 0.35rem;
+  padding: 0 0.65rem 0.75rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.locationItem {
+  display: flex;
+  min-width: 0;
+  min-height: 3.6rem;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0.55rem;
+  border: 1px solid transparent;
+  border-radius: 0.65rem;
+  color: var(--map-ink);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+
+.locationItem:hover,
+.locationItem[data-selected='true'] {
+  border-color: var(--map-border);
+  background: var(--map-surface-muted);
+}
+
+.locationGlyph {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 0.6rem;
+  color: #fff9e9;
+  background: #425444;
+  font-size: 0.8rem;
+}
+
+.locationCopy {
+  display: grid;
+  min-width: 0;
+  gap: 0.18rem;
+}
+
+.locationName {
+  overflow: hidden;
+  font-size: 0.82rem;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.locationType {
+  color: var(--map-muted);
+  font-size: 0.7rem;
+}
+
+.locationArrow {
+  margin-left: auto;
+  color: #99865d;
+  font-size: 1.3rem;
+}
+
+.emptyState {
+  padding: 0.8rem 0.55rem;
+  color: var(--map-muted);
+}
+
+.detailPanel {
+  margin: auto 0.75rem 0.75rem;
+  padding: 0.85rem;
+  border: 1px solid #ded2b5;
+  border-radius: 0.75rem;
+  background:
+    radial-gradient(ellipse at 100% 0, rgb(215 183 119 / 15%), transparent 12rem),
+    #f6f1e5;
+}
+
+.detailTopline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.detailType {
+  color: #82683b;
+  font-size: 0.66rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.closeButton {
+  width: 2rem;
+  height: 2rem;
+  border-color: #d7ccb2;
+  color: var(--map-forest);
+  background: rgb(255 255 255 / 65%);
+}
+
+.closeButton:hover {
+  color: var(--map-forest);
+  background: #eadcb9;
+}
+
+.detailTitle {
+  margin: 0.45rem 0 0;
+  color: var(--map-forest);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.1rem;
+}
+
+.detailDescription,
+.detailPrompt {
+  margin: 0.4rem 0 0;
+  color: #67685e;
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.detailPrompt {
+  margin: 0;
+}
+
+.locationForm {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.formLabel {
+  margin-top: 0.15rem;
+  color: #67685e;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.locationForm .search {
+  width: 100%;
+  margin: 0;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 5rem;
+  padding: 0.65rem 0.75rem;
+  resize: vertical;
+  border: 1px solid var(--map-border);
+  border-radius: 0.6rem;
+  outline: none;
+  color: var(--map-ink);
+  background: #fff;
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.textarea:focus-visible {
+  border-color: #ad9058;
+  box-shadow: 0 0 0 3px rgb(215 183 119 / 22%);
+}
+
+.saveLocationButton {
+  margin-top: 0.25rem;
+  border-color: var(--map-forest);
+  color: #f7f3e9;
+  background: var(--map-forest);
+}
+
+.saveLocationButton:hover {
+  border-color: #435b49;
+  background: #35463a;
+}
+
+.deleteLocationButton {
+  min-height: 2.35rem;
+  margin-top: 0.75rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid #d5b9b1;
+  border-radius: 0.55rem;
+  color: #8d3932;
+  background: rgb(255 255 255 / 60%);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.deleteLocationButton:hover {
+  background: #f7e6df;
+}
+
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .viewer {
+    min-height: 24rem;
+  }
+
+  .sidebar {
+    max-height: none;
+  }
+
+  .locationList {
+    flex: 0 0 auto;
+    max-height: 18rem;
+  }
+
+  .detailPanel {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .layout {
+    gap: 0.75rem;
+  }
+
+  .viewer,
+  .sidebar {
+    border-radius: 0.8rem;
+  }
+
+  .viewer {
+    min-height: 22rem;
+  }
+
+  .mapToolbar {
+    min-height: 4rem;
+    padding: 0.65rem 0.7rem;
+  }
+
+  .toolbarActions {
+    gap: 0.35rem;
+  }
+
+  .addLocationButton {
+    min-height: 2.15rem;
+    padding: 0.4rem 0.55rem;
+    font-size: 0.68rem;
+  }
+
+  .mapTitle {
+    font-size: 1rem;
+  }
+
+  .mapViewport,
+  .mapWrapper {
+    min-height: 19rem;
+  }
+
+  .control {
+    width: 2.15rem;
+    height: 2.15rem;
+  }
+
+  .mapHint {
+    padding-inline: 0.7rem;
+    font-size: 0.68rem;
+  }
+
+  .sidebarHeader {
+    padding-inline: 0.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .control,
+  .marker,
+  .filter,
+  .locationItem,
+  .addLocationButton,
+  .sidebarAddButton,
+  .saveLocationButton {
+    transition: none;
+  }
+}

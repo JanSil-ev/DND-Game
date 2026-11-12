@@ -4,7 +4,7 @@ export function NotePage() {
   return (
     <PageFrame
       eyebrow="Память приключения"
-      title="Заметки"
+      title="Хроника приключений"
       description="Хроника событий, зацепки и мысли, которые не стоит терять."
     />
   );
