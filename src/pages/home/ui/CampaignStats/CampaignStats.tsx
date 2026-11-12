@@ -1,9 +1,14 @@
 import { Paper, SimpleGrid, Text, Title } from '@mantine/core';
 import { useAppSelector } from '../../../../app/store/hooks';
 import styles from '../../HomePage.module.scss';
+import { selectCharacterCount } from '../../../../modules/characters/model/charactersSlice';
 
 export function CampaignStats() {
-  const stats = useAppSelector((state) => state.campaignStats.stats);
+  const campaignStats = useAppSelector((state) => state.campaignStats.stats);
+  const characterCount = useAppSelector(selectCharacterCount);
+  const noteCount = useAppSelector((state) => state.notes.items.length);
+  const npcCount = useAppSelector((state) => state.npcs.items.length);
+  const stats = [{ label: 'Персонажей', value: characterCount }, { label: 'NPC', value: npcCount }, ...campaignStats, { label: 'Заметок', value: noteCount }];
 
   return (
     <SimpleGrid className={styles.statsGrid} cols={{ base: 2, xs: 3 }}>

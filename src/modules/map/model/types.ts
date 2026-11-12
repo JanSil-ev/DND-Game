@@ -6,6 +6,7 @@ export type MapLocationType =
   | 'dungeon'
   | 'temple'
   | 'tavern'
+  | 'alchemy'
   | 'other';
 
 export interface MapLocation {

@@ -31,7 +31,10 @@
   min-height: 28rem;
   flex-direction: column;
   background: #19221e;
+  height: clamp(32rem, 72dvh, 55rem);
 }
+
+
 
 .mapToolbar {
   position: relative;
@@ -61,7 +64,7 @@
 .mapTitle {
   margin: 0.15rem 0 0;
   color: #f7f3e9;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, "Times New Roman", serif;
   font-size: 1.1rem;
   line-height: 1.2;
 }
@@ -71,6 +74,8 @@
   align-items: center;
   gap: 0.55rem;
 }
+
+
 
 .addLocationButton,
 .sidebarAddButton,
@@ -85,25 +90,32 @@
   font: inherit;
   font-size: 0.78rem;
   font-weight: 650;
+
   transition:
     border-color 150ms ease,
     background-color 150ms ease,
     color 150ms ease;
+
+  &:hover {
+    border-color: var(--map-accent);
+    background: rgb(215 183 119 / 22%);
+  }
 }
 
-.addLocationButton:hover,
-.sidebarAddButton:hover,
-.saveLocationButton:hover {
-  border-color: var(--map-accent);
-  background: rgb(215 183 119 / 22%);
-}
-
-.addLocationButton[data-active='true'],
-.sidebarAddButton[data-active='true'] {
+.addLocationButton[data-active="true"],
+.sidebarAddButton[data-active="true"] {
   border-color: #e4c990;
   color: #292e28;
   background: #d7b777;
 }
+
+.sidebarAddButton:disabled,
+.saveLocationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
 
 .controls {
   flex: 0 0 auto;
@@ -122,28 +134,38 @@
   color: #f7f3e9;
   background: rgb(255 255 255 / 5%);
   font-size: 1.25rem;
+
   transition:
     border-color 150ms ease,
     background-color 150ms ease,
     color 150ms ease;
+
+  &:hover {
+    border-color: var(--map-accent);
+    color: #fff4d8;
+    background: rgb(215 183 119 / 14%);
+  }
 }
 
-.control:hover,
-.closeButton:hover {
-  border-color: var(--map-accent);
-  color: #fff4d8;
-  background: rgb(215 183 119 / 14%);
-}
+
 
 .mapViewport {
   position: relative;
   min-height: 22rem;
   flex: 1;
+  min-height: 0;
   overflow: hidden;
+
   background-color: #292b24;
   background-image:
     radial-gradient(ellipse at center, rgb(215 183 119 / 7%), transparent 65%),
-    linear-gradient(45deg, rgb(255 255 255 / 2%) 25%, transparent 25% 75%, rgb(255 255 255 / 2%) 75%);
+    linear-gradient(
+      45deg,
+      rgb(255 255 255 / 2%) 25%,
+      transparent 25% 75%,
+      rgb(255 255 255 / 2%) 75%
+    );
+
   background-size:
     auto,
     24px 24px;
@@ -152,7 +174,7 @@
 .mapWrapper {
   width: 100% !important;
   height: 100% !important;
-  min-height: 22rem;
+  min-height: 0;
 }
 
 .mapContent {
@@ -167,7 +189,7 @@
   box-shadow: 0 0 2.5rem rgb(0 0 0 / 25%);
 }
 
-.map[data-adding='true'] {
+.map[data-adding="true"] {
   cursor: crosshair;
 }
 
@@ -179,90 +201,32 @@
   -webkit-user-drag: none;
 }
 
-.map[data-error='true'] .image {
+.map[data-error="true"] .image {
   visibility: hidden;
 }
 
-.controls :global(.mantine-ActionIcon-root):focus-visible,
-.closeButton:focus-visible,
-.locationItem:focus-visible,
-.filter:focus-visible,
-.marker:focus-visible,
-.retryButton:focus-visible {
-  outline: 3px solid #e4c990;
-  outline-offset: 3px;
-}
+// LOADING AND ERRORS
 
-.marker {
+.mapLoading {
   position: absolute;
-  z-index: 1;
-  display: grid;
-  padding: 0;
-  place-items: center;
-  transform: translate(-50%, -50%);
-  border: 0;
-  background: #ffffff;
-  cursor: pointer;
-  transition:
-    width 120ms ease,
-    height 120ms ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.markerIcon {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  fill: currentColor;
-  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 75%));
-  pointer-events: none;
-}
-
-.marker::before {
-  position: absolute;
-  width: var(--marker-hit-size);
-  height: var(--marker-hit-size);
-  border-radius: 50%;
-  content: '';
-}
-
-.pendingMarker {
-  position: absolute;
-  z-index: 3;
-  width: 0.65rem;
-  height: 0.65rem;
-  transform: translate(-50%, -50%);
-  border: 2px solid #fff9e9;
-  border-radius: 50%;
-  background: #a9493d;
-  box-shadow:
-    0 0 0 0.25rem rgb(169 73 61 / 28%),
-    0 1px 5px rgb(0 0 0 / 65%);
-  pointer-events: none;
-}
-
-.marker[data-selected='true'] {
-  z-index: 2;
-}
-
-.mapHint {
-  margin: 0;
-  padding: 0.6rem 1rem;
-  color: #c9c0aa;
-  background: #202a25;
-  font-size: 0.72rem;
-  line-height: 1.5;
+  z-index: 5;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: rgb(25 34 30 / 92%);
 }
 
 .mapError {
   position: absolute;
-  z-index: 3;
+  z-index: 6;
   inset: 1rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
   gap: 0.65rem;
   padding: 1.5rem;
   border: 1px solid rgb(215 183 119 / 35%);
@@ -287,7 +251,106 @@
   color: #f7f3e9;
   background: rgb(215 183 119 / 12%);
   cursor: pointer;
+
+  &:hover {
+    border-color: var(--map-accent);
+    background: rgb(215 183 119 / 22%);
+  }
 }
+
+
+.marker {
+  position: absolute;
+  z-index: 1;
+
+  display: grid;
+  place-items: center;
+
+  box-sizing: border-box;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+
+  transform: translate(-50%, -50%) scale(var(--marker-scale, 1));
+
+  transform-origin: center center;
+
+  border: var(--marker-border-width, 2px) solid #c5a46a;
+  border-radius: 50%;
+  background: #fffdf6;
+
+  box-shadow: 0 var(--marker-shadow-offset, 2px) var(--marker-shadow-blur, 6px) rgb(0 0 0 / 30%);
+
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    background: #fff4dc;
+  }
+
+  &[data-selected="true"] {
+    z-index: 2;
+    border-color: #a77b35;
+    background: #f7e9c7;
+  }
+}
+
+.markerIcon {
+  display: block;
+  width: 68%;
+  height: 68%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+
+
+.marker::before {
+  position: absolute;
+  width: var(--marker-hit-size, 44px);
+  height: var(--marker-hit-size, 44px);
+  border-radius: 50%;
+  content: "";
+}
+
+
+.pendingMarker {
+  position: absolute;
+  z-index: 3;
+  box-sizing: border-box;
+
+  width: 12px;
+  height: 12px;
+
+  transform: translate(-50%, -50%) scale(var(--pending-scale, 1));
+
+  transform-origin: center center;
+
+  border: 2px solid #fff9e9;
+  border-radius: 50%;
+  background: #a9493d;
+
+  box-shadow:
+    0 0 0 4px rgb(169 73 61 / 28%),
+    0 1px 5px rgb(0 0 0 / 65%);
+
+  pointer-events: none;
+}
+
+
+
+.mapHint {
+  margin: 0;
+  padding: 0.6rem 1rem;
+  color: #c9c0aa;
+  background: #202a25;
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+
 
 .sidebar {
   display: flex;
@@ -307,7 +370,7 @@
 .sidebarTitle {
   margin-top: 0.25rem;
   color: var(--map-forest);
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, "Times New Roman", serif;
   font-size: 1.25rem;
   font-weight: 600;
 }
@@ -332,17 +395,17 @@
   border-color: #516451;
   color: #f7f3e9;
   background: #35463a;
-}
 
-.sidebarAddButton:hover {
-  border-color: #73816a;
-  background: #425444;
-}
+  &:hover:not(:disabled) {
+    border-color: #73816a;
+    background: #425444;
+  }
 
-.sidebarAddButton[data-active='true'] {
-  border-color: #c5a960;
-  color: #292e28;
-  background: #d7b777;
+  &[data-active="true"] {
+    border-color: #c5a960;
+    color: #292e28;
+    background: #d7b777;
+  }
 }
 
 .storageError {
@@ -351,6 +414,8 @@
   font-size: 0.75rem;
   line-height: 1.45;
 }
+
+
 
 .searchLabel {
   margin: 0.9rem 0.9rem 0.35rem;
@@ -370,16 +435,18 @@
   color: var(--map-ink);
   background: #fff;
   font-size: 0.85rem;
+
+  &::placeholder {
+    color: #888778;
+  }
+
+  &:focus-visible {
+    border-color: #ad9058;
+    box-shadow: 0 0 0 3px rgb(215 183 119 / 22%);
+  }
 }
 
-.search::placeholder {
-  color: #888778;
-}
 
-.search:focus-visible {
-  border-color: #ad9058;
-  box-shadow: 0 0 0 3px rgb(215 183 119 / 22%);
-}
 
 .filters {
   display: flex;
@@ -399,17 +466,25 @@
   background: var(--map-surface);
   cursor: pointer;
   font-size: 0.72rem;
+
   transition:
     border-color 150ms ease,
     color 150ms ease,
     background-color 150ms ease;
+
+  &[data-active="true"] {
+    border-color: var(--map-forest);
+    color: #f7f3e9;
+    background: var(--map-forest);
+  }
+
+  &:hover:not([data-active="true"]) {
+    border-color: #c5a46a;
+    background: #f5edda;
+  }
 }
 
-.filter[data-active='true'] {
-  border-color: var(--map-forest);
-  color: #f7f3e9;
-  background: var(--map-forest);
-}
+
 
 .locationList {
   display: grid;
@@ -434,15 +509,16 @@
   background: transparent;
   cursor: pointer;
   text-align: left;
+
   transition:
     border-color 150ms ease,
     background-color 150ms ease;
-}
 
-.locationItem:hover,
-.locationItem[data-selected='true'] {
-  border-color: var(--map-border);
-  background: var(--map-surface-muted);
+  &:hover,
+  &[data-selected="true"] {
+    border-color: var(--map-border);
+    background: var(--map-surface-muted);
+  }
 }
 
 .locationGlyph {
@@ -451,10 +527,17 @@
   height: 2rem;
   flex: 0 0 auto;
   place-items: center;
-  border-radius: 0.6rem;
-  color: #fff9e9;
-  background: #425444;
-  font-size: 0.8rem;
+  border: 1px solid #c5a46a;
+  border-radius: 50%;
+  background: #fffdf6;
+}
+
+.locationGlyphIcon {
+  display: block;
+  width: 65%;
+  height: 65%;
+  object-fit: contain;
+  pointer-events: none;
 }
 
 .locationCopy {
@@ -487,14 +570,16 @@
   color: var(--map-muted);
 }
 
+
+
 .detailPanel {
   margin: auto 0.75rem 0.75rem;
   padding: 0.85rem;
   border: 1px solid #ded2b5;
   border-radius: 0.75rem;
+
   background:
-    radial-gradient(ellipse at 100% 0, rgb(215 183 119 / 15%), transparent 12rem),
-    #f6f1e5;
+    radial-gradient(ellipse at 100% 0, rgb(215 183 119 / 15%), transparent 12rem), #f6f1e5;
 }
 
 .detailTopline {
@@ -518,17 +603,17 @@
   border-color: #d7ccb2;
   color: var(--map-forest);
   background: rgb(255 255 255 / 65%);
-}
 
-.closeButton:hover {
-  color: var(--map-forest);
-  background: #eadcb9;
+  &:hover {
+    color: var(--map-forest);
+    background: #eadcb9;
+  }
 }
 
 .detailTitle {
   margin: 0.45rem 0 0;
   color: var(--map-forest);
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, "Times New Roman", serif;
   font-size: 1.1rem;
 }
 
@@ -543,6 +628,8 @@
 .detailPrompt {
   margin: 0;
 }
+
+
 
 .locationForm {
   display: grid;
@@ -574,11 +661,11 @@
   font: inherit;
   font-size: 0.85rem;
   line-height: 1.45;
-}
 
-.textarea:focus-visible {
-  border-color: #ad9058;
-  box-shadow: 0 0 0 3px rgb(215 183 119 / 22%);
+  &:focus-visible {
+    border-color: #ad9058;
+    box-shadow: 0 0 0 3px rgb(215 183 119 / 22%);
+  }
 }
 
 .saveLocationButton {
@@ -586,11 +673,11 @@
   border-color: var(--map-forest);
   color: #f7f3e9;
   background: var(--map-forest);
-}
 
-.saveLocationButton:hover {
-  border-color: #435b49;
-  background: #35463a;
+  &:hover:not(:disabled) {
+    border-color: #435b49;
+    background: #35463a;
+  }
 }
 
 .deleteLocationButton {
@@ -605,11 +692,28 @@
   font: inherit;
   font-size: 0.75rem;
   font-weight: 650;
+
+  &:hover {
+    background: #f7e6df;
+  }
 }
 
-.deleteLocationButton:hover {
-  background: #f7e6df;
+
+
+.control:focus-visible,
+.closeButton:focus-visible,
+.locationItem:focus-visible,
+.filter:focus-visible,
+.marker:focus-visible,
+.retryButton:focus-visible,
+.sidebarAddButton:focus-visible,
+.saveLocationButton:focus-visible,
+.deleteLocationButton:focus-visible {
+  outline: 3px solid #e4c990;
+  outline-offset: 3px;
 }
+
+// RESPONSIVE
 
 @media (max-width: 1100px) {
   .layout {
@@ -657,7 +761,7 @@
     gap: 0.35rem;
   }
 
-  .addLocationButton {
+  .sidebarAddButton {
     min-height: 2.15rem;
     padding: 0.4rem 0.55rem;
     font-size: 0.68rem;
@@ -685,16 +789,132 @@
   .sidebarHeader {
     padding-inline: 0.8rem;
   }
+
+  .locationList {
+    max-height: 16rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .control,
-  .marker,
   .filter,
   .locationItem,
-  .addLocationButton,
   .sidebarAddButton,
   .saveLocationButton {
     transition: none;
   }
+}
+
+// Expanded map uses the whole application viewport and keeps the guide available.
+.layout[data-expanded='true'] {
+  position: fixed;
+  z-index: 300;
+  inset: 0;
+  height: 100dvh;
+  padding: max(0.75rem, env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right)) max(0.75rem, env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-left));
+  background: var(--map-canvas);
+  align-items: stretch;
+  .viewer { height: 100%; min-height: 0; }
+  .sidebar { max-height: 100%; }
+}
+.mapViewport { scroll-margin-top: 5rem; }
+.mapToolbar { flex-wrap: wrap; }
+.control { min-width: 44px; min-height: 44px; }
+.placesButton, .panelClose, .cancelPicking, .editLocationButton {
+  min-height: 44px;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--map-border);
+  border-radius: 0.55rem;
+  background: var(--map-surface);
+  color: var(--map-forest);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  &:focus-visible { outline: 3px solid #ad9058; outline-offset: 2px; }
+}
+.placesButton, .panelClose, .selectedPlace, .panelBackdrop { display: none; }
+.cancelPicking { margin: 0.4rem 0 0 0.75rem; }
+.coordinates { margin: 0.25rem 0; color: var(--map-muted); font-size: 0.72rem; }
+.detailActions { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem; }
+.detailActions .deleteLocationButton { margin-top: 0; min-height: 44px; }
+.sidebarAddButton, .saveLocationButton { min-height: 44px; }
+.detailTitle, .detailDescription { overflow-wrap: anywhere; }
+.detailDescription { white-space: pre-wrap; }
+
+@media (max-width: 1100px) {
+  .viewer { height: clamp(30rem, 72dvh, 52rem); }
+  .placesButton { display: inline-flex; align-items: center; }
+  .panelClose { display: inline-grid; flex-shrink: 0; width: 44px; place-items: center; font-size: 1.4rem; }
+  .sidebarHeader { order: -2; }
+  .sidebarHeader .locationCount { margin-left: auto; }
+  .detailPanel { order: -1; margin-top: 0.75rem; }
+  .sidebar {
+    display: none;
+    position: fixed;
+    z-index: 320;
+    top: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    width: min(25rem, calc(100% - 2rem));
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    &[data-open='true'] { display: flex; }
+  }
+  .locationList { flex-shrink: 0; max-height: none; overflow: visible; }
+  .panelBackdrop { display: block; position: fixed; z-index: 310; inset: 0; border: 0; background: rgb(0 0 0 / 40%); cursor: pointer; }
+  .selectedPlace {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+    padding: 0.75rem 1rem; border: 0; border-top: 1px solid rgb(215 183 119 / 30%);
+    background: #f6f1e5; color: var(--map-forest); cursor: pointer; font: inherit;
+    font-size: 0.85rem; text-align: left; overflow-wrap: anywhere;
+    span { flex-shrink: 0; color: #82683b; font-size: 0.72rem; }
+    &:focus-visible { outline: 3px solid #ad9058; outline-offset: -3px; }
+  }
+}
+@media (max-width: 639px) {
+  .mapToolbar { gap: 0.6rem; }
+  .mapToolbar > :first-child { display: none; }
+  .toolbarActions { flex: 1; justify-content: space-between; }
+  .controls { gap: 4px; padding: 0; border: 0; background: none; }
+  .control { width: 44px; height: 44px; }
+  .viewer { height: 70dvh; min-height: 24rem; }
+  .mapViewport, .mapWrapper { min-height: 0; }
+  .sidebar { top: auto; right: 0; bottom: 0; width: 100%; max-height: 80dvh; border-radius: 1rem 1rem 0 0; padding-bottom: env(safe-area-inset-bottom); }
+  .layout[data-expanded='true'] { padding: 0; .viewer { border-radius: 0; } }
+  .search, .textarea { font-size: 16px; }
+}
+
+.missingPlace { grid-column: 1 / -1; margin: 0; padding: 0.75rem 1rem; border: 1px solid #d5b9b1; border-radius: 0.6rem; background: #fbf0e9; color: #8d3932; font-size: 0.85rem; }
+.linkedNotes {
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--map-border);
+  h4 { margin: 0; color: var(--map-forest); font-size: 0.82rem; }
+  ul { margin: 0.5rem 0; padding: 0; list-style: none; }
+  p { color: var(--map-muted); font-size: 0.75rem; }
+  li a { display: flex; align-items: center; gap: 0.5rem; min-height: 44px; padding-block: 0.4rem; color: var(--map-forest); font-size: 0.8rem; text-decoration: none; overflow-wrap: anywhere; }
+  a:focus-visible { outline: 2px solid #ad9058; outline-offset: 2px; }
+}
+.notePriority { flex: 0 0 0.5rem; height: 0.5rem; border-radius: 50%; background: #36834a; &[data-priority='high'] { background: #c43d36; } &[data-priority='medium'] { background: #d4a017; } }
+.linkedNoteActions { display: flex; flex-wrap: wrap; gap: 0.5rem; a { display: inline-flex; align-items: center; min-height: 44px; color: #45613e; font-size: 0.75rem; text-underline-offset: 3px; } }
+
+// Landscape tablets keep the map and its guide visible side by side.
+@media (min-width: 768px) and (max-width: 1100px) and (orientation: landscape) {
+  .layout { grid-template-columns: minmax(0, 1fr) clamp(16rem, 30vw, 19rem); }
+  .viewer { height: clamp(26rem, 74dvh, 52rem); }
+  .sidebar, .sidebar[data-open='true'] {
+    display: flex;
+    position: static;
+    width: auto;
+    max-height: clamp(26rem, 74dvh, 52rem);
+    overflow-y: auto;
+  }
+  .sidebarHeader { order: 0; }
+  .detailPanel { order: 0; flex-shrink: 0; margin-top: 0.75rem; }
+  .locationList { flex: 1 0 8rem; max-height: 14rem; overflow-y: auto; }
+  .panelBackdrop, .placesButton, .panelClose, .selectedPlace { display: none; }
+  .mapToolbar > :first-child { display: none; }
+  .toolbarActions { width: 100%; justify-content: flex-end; }
+  .layout[data-expanded='true'] { .viewer { height: 100%; } .sidebar { max-height: 100%; } }
 }

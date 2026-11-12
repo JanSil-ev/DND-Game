@@ -1,11 +1,18 @@
 import { PageFrame } from '../../app/layouts/PageFrame/PageFrame';
+import { useAppSelector } from '../../app/store/hooks';
+import { Club } from '../../modules/club/ui/Club';
+import styles from './ClubPage.module.scss';
 
 export function ClubPage() {
+  const profile = useAppSelector((state) => state.club.profile);
   return (
     <PageFrame
-      eyebrow="Штаб-квартира"
-      title="База банды"
-      description="Место, где собирается команда, делится новостями и строит планы."
-    />
+      className={styles.page}
+      eyebrow="Организация"
+      title={profile.name}
+      description={profile.description}
+    >
+      <Club />
+    </PageFrame>
   );
 }

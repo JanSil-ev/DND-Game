@@ -1,6 +1,7 @@
 import { Container } from '@mantine/core';
 import { CampaignHero } from './ui/CampaignHero/CampaignHero';
 import { CampaignStats } from './ui/CampaignStats/CampaignStats';
+import { CampaignBrief } from './ui/CampaignBrief/CampaignBrief';
 import { NavigationCard } from './ui/NavigationCard/NavigationCard';
 import { homeNavigation } from './config/homeNavigation';
 import styles from './HomePage.module.scss';
@@ -19,6 +20,8 @@ export function HomePage() {
           <CampaignStats />
         </section>
 
+        <CampaignBrief />
+
         <section className={styles.navigationSection}>
           <div className={styles.sectionHeading}>
             <p className={styles.sectionEyebrow}>Всё для приключения</p>
@@ -32,6 +35,7 @@ export function HomePage() {
                 title={item.title}
                 description={item.description}
                 to={item.to}
+                icon={item.icon}
               />
             ))}
           </div>

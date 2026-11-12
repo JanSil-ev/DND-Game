@@ -10,7 +10,7 @@ interface AppNavbarProps {
 
 export function AppNavbar({ onNavigate }: AppNavbarProps) {
   return (
-    <AppShell.Navbar className={styles.navbar}>
+    <AppShell.Navbar id="main-navigation" className={styles.navbar}>
       <Stack gap="xs">
         {navigation.map((item) => (
           <NavigationItem

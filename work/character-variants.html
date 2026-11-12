@@ -1,0 +1,391 @@
+<style>
+    #heroes-preview {
+        --paper: light-dark(#f5f3ed, #202720);
+        --surface: light-dark(#fffef9, #2b342c);
+        --ink: light-dark(#292e28, #f3efdf);
+        --muted: light-dark(#6d7065, #bbbfae);
+        --line: light-dark(#e4dcc8, #465044);
+        --forest: #26352b;
+        --gold: #d7b777;
+        font: 14px/1.5 'Segoe UI', sans-serif;
+        color: var(--ink)
+    }
+
+    #heroes-preview * {
+        box-sizing: border-box
+    }
+
+    #heroes-preview .stage {
+        min-height: 700px;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        overflow: hidden
+    }
+
+    #heroes-preview .top {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 18px 24px;
+        background: var(--forest);
+        color: #f7f3e9
+    }
+
+    #heroes-preview .brand {
+        font-family: Georgia, serif;
+        font-size: 21px
+    }
+
+    #heroes-preview .top small {
+        color: #d7b777
+    }
+
+    #heroes-preview .shell {
+        display: grid;
+        grid-template-columns: 150px 1fr;
+        min-height: 642px
+    }
+
+    #heroes-preview aside {
+        padding: 28px 15px;
+        border-right: 1px solid var(--line)
+    }
+
+    #heroes-preview .navitem {
+        padding: 10px 12px;
+        color: var(--muted);
+        margin-bottom: 4px
+    }
+
+    #heroes-preview .navitem.active {
+        background: var(--forest);
+        color: #f7f3e9;
+        border-radius: 7px
+    }
+
+    #heroes-preview main {
+        padding: 30px;
+        min-width: 0
+    }
+
+    #heroes-preview .eyebrow {
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 11px
+    }
+
+    #heroes-preview h2 {
+        font: 32px/1.2 Georgia, serif;
+        margin: 8px 0
+    }
+
+    #heroes-preview h3 {
+        font: 23px/1.2 Georgia, serif;
+        margin: 10px 0
+    }
+
+    #heroes-preview p {
+        margin: 8px 0
+    }
+
+    #heroes-preview .muted {
+        color: var(--muted)
+    }
+
+    #heroes-preview .heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 25px
+    }
+
+    #heroes-preview button {
+        font: inherit;
+        cursor: pointer
+    }
+
+    #heroes-preview .action {
+        padding: 10px 15px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: var(--surface);
+        color: var(--ink)
+    }
+
+    #heroes-preview .primary {
+        background: var(--forest);
+        color: #f7f3e9;
+        border-color: var(--forest)
+    }
+
+    #heroes-preview .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px
+    }
+
+    #heroes-preview .hero {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden
+    }
+
+    #heroes-preview .art {
+        height: 155px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, #34483c, #19251f);
+        color: var(--gold);
+        position: relative
+    }
+
+    #heroes-preview .art:before {
+        content: '';
+        width: 98px;
+        height: 98px;
+        border: 1px solid #d7b77766;
+        border-radius: 50%;
+        position: absolute
+    }
+
+    #heroes-preview .art i {
+        width: 45px;
+        height: 45px
+    }
+
+    #heroes-preview .copy {
+        padding: 17px
+    }
+
+    #heroes-preview .tag {
+        font-size: 11px;
+        letter-spacing: 1px;
+        color: var(--muted);
+        text-transform: uppercase
+    }
+
+    #heroes-preview .stats {
+        display: flex;
+        gap: 16px;
+        margin: 18px 0;
+        flex-wrap: wrap
+    }
+
+    #heroes-preview .stats strong {
+        display: block;
+        font-size: 19px;
+        font-weight: 500
+    }
+
+    #heroes-preview .stats span {
+        font-size: 11px;
+        color: var(--muted)
+    }
+
+    #heroes-preview .copy button {
+        width: 100%
+    }
+
+    #heroes-preview .split {
+        display: grid;
+        grid-template-columns: 185px 1fr;
+        gap: 25px
+    }
+
+    #heroes-preview .person {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 16px 13px;
+        background: transparent;
+        border: 0;
+        border-bottom: 1px solid var(--line);
+        color: var(--ink)
+    }
+
+    #heroes-preview .person.selected {
+        background: var(--surface);
+        border-left: 3px solid var(--gold)
+    }
+
+    #heroes-preview .person small {
+        display: block;
+        color: var(--muted);
+        margin-top: 5px
+    }
+
+    #heroes-preview .detail {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 24px
+    }
+
+    #heroes-preview .detail .art {
+        height: 135px;
+        border-radius: 7px;
+        margin-bottom: 20px
+    }
+
+    #heroes-preview .quote {
+        font: italic 19px/1.6 Georgia, serif;
+        color: var(--muted);
+        border-left: 2px solid var(--gold);
+        padding-left: 18px;
+        margin: 22px 0
+    }
+
+    #heroes-preview .journal {
+        display: grid;
+        grid-template-columns: 1.15fr 1fr;
+        gap: 30px
+    }
+
+    #heroes-preview .journal .art {
+        height: 290px;
+        border-radius: 90px 90px 8px 8px
+    }
+
+    #heroes-preview .journal .art i {
+        width: 85px;
+        height: 85px
+    }
+
+    #heroes-preview .journal .art:before {
+        width: 160px;
+        height: 160px
+    }
+
+    #heroes-preview .folio {
+        font: italic 15px Georgia, serif;
+        color: var(--muted);
+        margin-top: 18px
+    }
+
+    #heroes-preview .entry {
+        padding: 15px 0;
+        border-bottom: 1px solid var(--line)
+    }
+
+    #heroes-preview .note {
+        margin-top: 22px;
+        color: var(--muted);
+        font-size: 12px
+    }
+
+    #heroes-preview [hidden] {
+        display: none !important
+    }
+
+    @media(max-width:780px) {
+        #heroes-preview .shell {
+            grid-template-columns: 1fr
+        }
+
+        #heroes-preview aside {
+            display: none
+        }
+
+        #heroes-preview main {
+            padding: 22px
+        }
+
+        #heroes-preview .grid {
+            grid-template-columns: 1fr
+        }
+
+        #heroes-preview .hero {
+            display: grid;
+            grid-template-columns: 100px 1fr
+        }
+
+        #heroes-preview .art {
+            height: 100%;
+            min-height: 175px
+        }
+
+        #heroes-preview .art:before {
+            width: 70px;
+            height: 70px
+        }
+
+        #heroes-preview .split {
+            grid-template-columns: 1fr
+        }
+
+        #heroes-preview .people {
+            display: flex;
+            flex-wrap: wrap
+        }
+
+        #heroes-preview .person {
+            width: auto;
+            flex: 1;
+            min-width: 130px
+        }
+
+        #heroes-preview .journal {
+            grid-template-columns: 1fr
+        }
+
+        #heroes-preview .journal .art {
+            height: 180px
+        }
+
+        #heroes-preview .stage {
+            min-height: 1050px
+        }
+
+        #heroes-preview .top {
+            flex-wrap: wrap;
+            padding: 16px
+        }
+
+        #heroes-preview h2 {
+            font-size: 28px
+        }
+    }
+</style>
+<div id="heroes-preview">
+    <div class="viz-carousel" aria-label="Варианты страницы персонажей" data-previous-label="Назад"
+        data-next-label="Далее">
+        <section data-variant="Карточки героев" aria-label="Карточки героев">
+            <div class="stage" data-layout="cards"></div>
+        </section>
+        <section data-variant="Досье отряда" aria-label="Досье отряда" hidden>
+            <div class="stage" data-layout="dossier"></div>
+        </section>
+        <section data-variant="Журнал приключений" aria-label="Журнал приключений" hidden>
+            <div class="stage" data-layout="journal"></div>
+        </section>
+    </div>
+</div>
+<script>
+    (() => {
+        const root = document.getElementById('heroes-preview');
+        const heroes = [{ name: 'Торин', kind: 'Дворф · Воин', icon: 'swords', hp: 52, ac: 18, role: 'Щит отряда', quote: '«Сначала кружка эля. Потом спасём мир».', story: 'Бывший стражник, который ищет пропавшего брата в переулках Вотердипа.' }, { name: 'Лиара', kind: 'Полуэльф · Плут', icon: 'key-round', hp: 38, ac: 15, role: 'Тень Вотердипа', quote: '«У каждой двери есть слабое место».', story: 'Знает тайные ходы города и слишком многих людей по обе стороны закона.' }, { name: 'Элиас', kind: 'Человек · Волшебник', icon: 'wand-sparkles', hp: 29, ac: 12, role: 'Хранитель тайн', quote: '«Это точно не было в моих записях».', story: 'Исследует древние руины и собирает сведения о забытых заклинаниях.' }];
+        const art = h => `<div class="art" aria-label="Эмблема персонажа"><i data-lucide="${h.icon}" aria-hidden="true"></i></div>`;
+        const stats = h => `<div class="stats"><div><strong>${h.hp}</strong><span>Здоровье</span></div><div><strong>${h.ac}</strong><span>Класс брони</span></div><div><strong>5</strong><span>Уровень</span></div></div>`;
+        const icons = () => { if (globalThis.lucide) lucide.createIcons() };
+        root.querySelectorAll('.stage').forEach(stage => {
+            stage.innerHTML = `<header class="top"><span class="brand">Банда 3.5</span><small>ХРОНИКИ КАМПАНИИ</small></header><div class="shell"><aside>${['Главная', 'Персонажи', 'NPC', 'База банды', 'Карта', 'Заметки', 'Инвентарь', 'Кубики'].map(n => `<div class="navitem ${n === 'Персонажи' ? 'active' : ''}">${n}</div>`).join('')}</aside><main><div class="heading"><div><div class="eyebrow">Персонажи игроков</div><h2>Герои кампании</h2><p class="muted">Те, с кем начинается большая история.</p></div></div><div class="content"></div><p class="note">Пример наполнения · вымышленные персонажи</p></main></div>`;
+            const content = stage.querySelector('.content');
+            if (stage.dataset.layout === 'cards') {
+                content.innerHTML = `<div class="grid">${heroes.map((h, i) => `<article class="hero">${art(h)}<div class="copy"><span class="tag">${h.role}</span><h3>${h.name}</h3><p class="muted">${h.kind}</p>${stats(h)}<button class="action" data-open="${i}">О персонаже</button><p class="bio" hidden>${h.story}</p></div></article>`).join('')}</div>`;
+                content.querySelectorAll('[data-open]').forEach(b => b.onclick = () => { const p = b.nextElementSibling; p.hidden = !p.hidden; b.textContent = p.hidden ? 'О персонаже' : 'Свернуть историю' });
+            } else if (stage.dataset.layout === 'dossier') {
+                content.innerHTML = `<div class="split"><div class="people">${heroes.map((h, i) => `<button class="person ${i === 0 ? 'selected' : ''}" data-person="${i}" aria-pressed="${i === 0}">${h.name}<small>${h.kind}</small></button>`).join('')}</div><article class="detail" aria-live="polite"></article></div>`;
+                const show = i => { const h = heroes[i]; content.querySelector('.detail').innerHTML = `${art(h)}<span class="tag">${h.role} · уровень 5</span><h3>${h.name}</h3><p class="muted">${h.kind}</p>${stats(h)}<hr><p>${h.story}</p><div class="quote">${h.quote}</div>`; content.querySelectorAll('[data-person]').forEach(b => { const chosen = Number(b.dataset.person) === i; b.classList.toggle('selected', chosen); b.setAttribute('aria-pressed', String(chosen)) }); icons() };
+                content.querySelectorAll('[data-person]').forEach(b => b.onclick = () => show(Number(b.dataset.person))); show(0);
+            } else {
+                let index = 0; const show = () => { const h = heroes[index]; content.innerHTML = `<div class="journal"><div>${art(h)}<div class="folio">Личное дело / ${String(index + 1).padStart(2, '0')}</div></div><article><span class="tag">${h.role}</span><h2>${h.name}</h2><p class="muted">${h.kind} · уровень 5</p><div class="quote">${h.quote}</div><div class="entry"><span class="tag">Его история</span><p>${h.story}</p></div><div class="entry"><span class="tag">Связь с отрядом</span><p>Один из завсегдатаев бара 3.5 и участник последней вылазки.</p></div><div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap"><button class="action" data-prev>← Назад</button><button class="action primary" data-next>Следующий герой →</button></div></article></div>`; content.querySelector('[data-prev]').onclick = () => { index = (index + 2) % 3; show() }; content.querySelector('[data-next]').onclick = () => { index = (index + 1) % 3; show() }; icons() }; show();
+            }
+            if (globalThis.Tweak) { const state = { rounding: 14 }; const tweak = new Tweak({ container: stage, onChange: () => { stage.style.borderRadius = state.rounding + 'px' } }); tweak.addSlider(state, 'rounding', { label: 'Скругление окна', min: 0, max: 24, unit: 'px' }); }
+        }); icons();
+    })();
+</script>

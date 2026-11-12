@@ -1,0 +1,14 @@
+.layout { min-width: 0; margin-top: 1rem; }
+.floors { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.75rem; }
+.floors button, .controls button { min-height: 44px; padding: 0.5rem 0.65rem; border: 1px solid var(--color-border); border-radius: 0.45rem; background: var(--color-surface); color: var(--color-forest); cursor: pointer; font-size: 0.72rem; }
+.floors button[aria-pressed='true'] { border-color: var(--color-forest); background: var(--color-forest); color: #f7e9c7; }
+.floors button:focus-visible, .controls button:focus-visible, .roomSelect select:focus-visible { outline: 2px solid #ad9058; outline-offset: 2px; }
+.controls { display: flex; align-items: center; gap: 0.35rem; padding: 0.5rem; border: 1px solid var(--color-border); border-bottom: 0; border-radius: 0.6rem 0.6rem 0 0; background: #f3eddd; span { flex: 1; color: var(--color-muted); font-size: 0.65rem; line-height: 1.5; } button:disabled { opacity: 0.5; cursor: not-allowed; } }
+.viewport { position: relative; container-type: inline-size; height: clamp(28rem, 65dvh, 44rem); overflow: hidden; border: 1px solid var(--color-border); border-radius: 0 0 0.6rem 0.6rem; background: #252e27; }
+.wrapper { width: 100% !important; height: 100% !important; }
+.content { max-width: 100%; }
+.photo { position: relative; width: min(867px, 100cqi); user-select: none; img { display: block; width: 100%; height: auto; -webkit-user-drag: none; } }
+.marker { position: absolute; z-index: 1; display: grid; width: 32px; height: 32px; padding: 0; place-items: center; border: 2px solid #fff5d9; border-radius: 50%; background: #344c3a; color: #fff8e8; box-shadow: 0 2px 7px rgb(0 0 0 / 50%); font-size: 12px; font-weight: 700; cursor: pointer; transform-origin: center; &::before { position: absolute; width: 44px; height: 44px; content: ''; border-radius: 50%; } &[aria-pressed='true'] { z-index: 2; background: #d7b777; color: #26352b; border-color: #26352b; } &:focus-visible { outline: 3px solid #d7b777; outline-offset: 3px; } &:disabled { cursor: not-allowed; } }
+.message { position: absolute; z-index: 3; inset: 1rem; display: grid; place-items: center; margin: 0; padding: 1rem; color: #f7e9c7; background: #252e27; font-size: 0.85rem; line-height: 1.7; text-align: center; }
+.roomSelect { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem; font-size: 0.75rem; color: var(--color-muted); select { width: 100%; min-width: 0; min-height: 44px; padding: 0.6rem; border: 1px solid var(--color-border); border-radius: 0.5rem; background: var(--color-surface); color: var(--color-ink); font-size: 0.8rem; } }
+@media (max-width: 767px) { .viewport { height: 62dvh; min-height: 22rem; } .roomSelect select { font-size: 16px; } .controls span { display: none; } .controls { justify-content: flex-end; } }

@@ -479,3 +479,41 @@
     transition: none;
   }
 }
+
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1.5rem; min-height: 300px; padding: clamp(1.5rem, 4vw, 3rem); }
+.heroContent { min-width: 0; max-width: none; padding-bottom: 0; }
+.heroArtwork { position: relative; top: auto; right: auto; bottom: auto; width: clamp(7rem, 14vw, 10rem); transform: none; }
+.heroActions { gap: 0.6rem; margin-top: 1.5rem; }
+.briefSection { margin-top: clamp(2.5rem, 5vw, 4rem); }
+.briefGrid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+.briefAside { display: grid; gap: 1rem; min-width: 0; }
+.briefCard { min-width: 0; padding: 1.25rem; border: 1px solid #ded2b5; border-radius: 0.9rem; background: radial-gradient(ellipse at top right, rgb(215 183 119 / 10%), transparent 20rem), #fffef9; box-shadow: 0 0.5rem 1.5rem rgb(35 42 35 / 4%); }
+.briefHeading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; h3 { margin: 0; font: 500 1.35rem/1.3 Georgia, serif; color: #2b382e; } }
+.priorityBadge { padding: 0.3rem 0.5rem; border: 1px solid #dbb2a5; border-radius: 1rem; background: #fae9e0; color: #963e35; font-size: 0.6rem; }
+.noticeSeal { display: grid; place-items: center; width: 2rem; height: 2rem; border: 1px solid #a96e59; border-radius: 50%; background: #8a4c3c; color: #f4d8a7; box-shadow: inset 0 0 0 3px rgb(255 231 185 / 12%); }
+.briefNotes { margin: 1rem 0 0; padding: 0; list-style: none; li + li { border-top: 1px solid var(--color-border); } a { display: block; padding: 0.85rem 0; color: inherit; text-decoration: none; } a > div { display: flex; justify-content: space-between; gap: 0.75rem; align-items: baseline; } h4 { min-width: 0; margin: 0; font-size: 0.85rem; line-height: 1.5; overflow-wrap: anywhere; } time { flex-shrink: 0; color: var(--color-muted); font-size: 0.65rem; } p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; white-space: pre-wrap; margin: 0.45rem 0; color: var(--color-muted); font-size: 0.78rem; line-height: 1.7; } a:hover h4 { color: #8a7040; } }
+.briefRead { display: inline-flex; align-items: center; min-height: 32px; color: #7c663c; font-size: 0.7rem; }
+.briefLink { display: flex; align-items: center; min-height: 44px; margin-top: 0.5rem; border-top: 1px solid var(--color-border); color: #45613e; font-size: 0.78rem; text-decoration: none; }
+.briefLink:hover { color: #8a7040; }
+.briefEmpty { padding: 1rem 0; p { margin: 0 0 0.4rem; font-size: 0.85rem; } span { color: var(--color-muted); font-size: 0.75rem; line-height: 1.7; } }
+.briefWarning { padding: 0.6rem; border-radius: 0.4rem; color: #963e35; background: #faeee7; font-size: 0.72rem; line-height: 1.6; }
+.announcementPreview { display: block; margin: 1rem 0; text-decoration: none; color: inherit; h4 { margin: 0; font: 500 1.15rem/1.4 Georgia, serif; overflow-wrap: anywhere; } p { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.8rem; line-height: 1.8; color: var(--color-muted); } &:hover h4 { color: #8a7040; } }
+.treasuryPreview { display: flex; align-items: center; flex-wrap: wrap; gap: 1rem; padding: 1.25rem; border: 1px solid #b79a5d; border-radius: 0.8rem; background: radial-gradient(ellipse at top right, rgb(215 183 119 / 15%), transparent), #26352b; color: #f3e4bd; text-decoration: none; h3 { margin: 0; font: 500 1.2rem Georgia, serif; } > div:first-child > span { display: inline-block; margin-top: 0.4rem; font-size: 0.65rem; color: #cbb98f; } > span:last-child { margin-left: auto; } &:hover { border-color: #d7b777; } }
+.treasuryAmounts { display: flex; flex-wrap: wrap; gap: 0.6rem; font-size: 0.68rem; color: #cbb98f; strong { font: 500 1.1rem Georgia, serif; color: #f3e4bd; overflow-wrap: anywhere; } span { min-width: 0; } }
+.cardGlyph { display: grid; flex: 0 0 2.5rem; height: 2.5rem; place-items: center; border: 1px solid #d5c49e; border-radius: 0.5rem; background: linear-gradient(145deg, #f7efd9, #e8ddc3); color: #806737; box-shadow: inset 0 0 0 3px rgb(255 254 249 / 60%); }
+.cardContent { min-width: 0; overflow-wrap: anywhere; }
+.cardIndex { font-size: 0.75rem; }
+.briefNotes a:focus-visible, .briefLink:focus-visible, .announcementPreview:focus-visible, .treasuryPreview:focus-visible { outline: 2px solid #ad9058; outline-offset: 3px; border-radius: 0.35rem; }
+@media (min-width: 768px) and (max-width: 1100px) and (orientation: landscape) { .navigationGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 768px) and (max-width: 1199px) and (orientation: portrait) { .briefGrid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 767px) { .briefGrid { grid-template-columns: minmax(0, 1fr); } .briefCard { padding: 1rem; } }
+@media (max-width: 560px) {
+  .hero { grid-template-columns: minmax(0, 1fr); padding: 1.25rem 1rem; gap: 1rem; }
+  .heroArtwork { justify-self: end; width: 7rem; margin-right: 0.5rem; }
+  .heroActions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+  .heroActions > :first-child { grid-column: 1 / -1; }
+  .briefSection { margin-top: 1.65rem; }
+  .cardIndex { display: none; }
+  .cardGlyph { flex-basis: 2rem; height: 2rem; svg { width: 20px; height: 20px; } }
+  .navigationCard { gap: 0.45rem; padding: 0.65rem; }
+}

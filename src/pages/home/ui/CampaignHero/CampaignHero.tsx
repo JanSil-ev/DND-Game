@@ -11,12 +11,13 @@ export function CampaignHero() {
         <PageHeading eyebrow="Хроники одной большой истории" title="Банда 3.5" />
 
         <div className={styles.heroActions}>
-          <Link className={styles.primaryAction} to={routes.characters}>
-            К персонажам
+          <Link className={styles.primaryAction} to={`${routes.notes}?new=1`}>
+            ＋ Добавить заметку
           </Link>
-          <Link className={styles.secondaryAction} to={routes.notes}>
-            Заметки
+          <Link className={styles.secondaryAction} to={routes.map}>
+            Открыть карту
           </Link>
+          <Link className={styles.secondaryAction} to={routes.dice}>Бросить кости</Link>
         </div>
       </div>
       <div className={styles.heroArtwork}>

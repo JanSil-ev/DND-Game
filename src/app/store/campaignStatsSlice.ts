@@ -11,9 +11,6 @@ interface CampaignStatsState {
 
 const initialState: CampaignStatsState = {
   stats: [
-    { label: 'Персонажей', value: 5 },
-    { label: 'NPC', value: 10 },
-    { label: 'Заметок', value: 8 },
   ],
 };
 

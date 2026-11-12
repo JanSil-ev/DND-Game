@@ -1,11 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
-import type { FormEvent, MouseEvent as ReactMouseEvent } from "react";
-import type { CSSProperties } from "react";
-import { ActionIcon, Group, Text, Title } from "@mantine/core";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties, FormEvent, MouseEvent as ReactMouseEvent } from "react";
+
+import { ActionIcon, Group, Loader, Text, Title } from "@mantine/core";
+import { useFocusTrap, useMediaQuery, useReducedMotion } from "@mantine/hooks";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
-import { locationTypes, locations } from "../../model/location";
+import type { ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
+import { Link, useSearchParams } from 'react-router';
+import { useAppDispatch, useAppSelector } from '../../../../app/store/hooks';
+import { routes } from '../../../../app/router/routes';
+import { mapLocationsSaved, mapLocationsSaveFailed, selectMapLocations } from '../../model/mapLocationsSlice';
+import { priorities } from '../../../notes/model/notesSlice';
+
+import { locationTypes } from "../../model/location";
 import type { MapLocation, MapLocationType } from "../../model/types";
-import { readUserLocations, saveUserLocations } from "../../model/userLocations";
+import { saveUserLocations } from "../../model/userLocations";
+
 import styles from "./CityMap.module.scss";
 
 interface PendingLocation {
@@ -13,152 +22,323 @@ interface PendingLocation {
   y: number;
 }
 
-interface UserLocationsState {
-  locations: MapLocation[];
-  ready: boolean;
-  error: string | null;
-}
-
-
-const markerIcons: Record<MapLocationType, string> = {
-  city: "M2 21V9l3-2V3h3v3l4-3 4 3V3h3v4l3 2v12h-8v-6h-4v6H2zm3-2h3v-4H5v4zm0-7h3V9H5v3zm11 7h3v-4h-3v4zm0-7h3V9h-3v3zm-6 0h4V8h-4v4z",
-  club: "M12 2 3 6v6c0 5.2 3.5 8.5 9 10 5.5-1.5 9-4.8 9-10V6l-9-4zm0 2.2 7 3.1V12c0 4-2.5 6.6-7 8-4.5-1.4-7-4-7-8V7.3l7-3.1zM7 7l10 10-1.5 1.5-10-10L7 7zm10 0 1.5 1.5-10 10L7 17 17 7z",
-  shop: "M8 2h8l-2 4 2 2c3.2 2.5 5 5.5 5 9a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5c0-3.5 1.8-6.5 5-9l2-2-2-4zm2.5 2 1 2h1l1-2h-3zM12 10a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm-1 1h2v1h1v2h-1v-1h-2v1h2a2 2 0 0 1 0 4h-1v1h-2v-1H9v-2h2v1h2v-1h-2a2 2 0 0 1 0-4v-1z",
-  quest: "M11 2h2v11l2 2-2 2v4l-1 2-1-2v-4l-2-2 2-2V2zM5 13h14v3H5v-3zm5-11h4l-1 10h-2L10 2z",
-  dungeon: "M2 21V10l4-6 4 3 3-5 4 5 3-2 2 5v11H2zm3-2h3v-5l4-5 4 5v5h3v-8l-2-3-4 3-3-4-3 3-2-1v10zm5 0h4v-5l-2-2-2 2v5z",
-  temple: "M12 1l2 4v3l6 4v9H4v-9l6-4V5l2-4zm0 4-1 2v2l-5 4v6h4v-5a2 2 0 0 1 4 0v5h4v-6l-5-4V7l-1-2zm-1 5h2v2h-2v-2zM2 21h20v2H2v-2z",
-  tavern: "M5 6c0-2 2-3 3-2 1-2 4-2 5 0 2-1 4 0 4 2h2a3 3 0 0 1 3 3v5a4 4 0 0 1-4 4h-1v2a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6zm2 2v12h8V8H7zm10 1v7h1a2 2 0 0 0 2-2V9h-3zM9 10h2v8H9v-8zm4 0h1v8h-1v-8z",
-  other: "M8 2h8l6 7-10 13L2 9l6-7zm1 2L5 9h5l1-5H9zm4 0 1 5h5l-4-5h-2zM5 11l7 9-2-9H5zm7 9 7-9h-5l-2 9z",
+type MarkerStyle = CSSProperties & {
+  "--marker-scale": number;
+  "--marker-hit-size": string;
+  "--marker-border-width": string;
+  "--marker-shadow-offset": string;
+  "--marker-shadow-blur": string;
 };
 
+type PendingMarkerStyle = CSSProperties & {
+  "--pending-scale": number;
+};
 
-function loadUserLocations(): UserLocationsState {
-  try {
-    return { locations: readUserLocations(), ready: true, error: null };
-  } catch (error) {
-    console.error("Не удалось загрузить сохранённые метки карты.", error);
-    return {
-      locations: [],
-      ready: false,
-      error: "Не удалось прочитать сохранённые метки. Они не будут перезаписаны.",
-    };
-  }
+const BASE_URL = import.meta.env.BASE_URL;
+
+const MAP_IMAGE = `${BASE_URL}maps/waterdeep.svg`;
+const MARKERS_PATH = `${BASE_URL}icon/markers/`;
+
+const MIN_SCALE = 1;
+const MAX_SCALE = 80;
+
+const MARKER_BASE_SIZE = 40;
+const MARKER_MIN_SIZE = 28;
+const MARKER_HIT_SIZE = 44;
+
+function getMarkerIcon(type: MapLocationType): string {
+  return `${MARKERS_PATH}${locationTypes[type].icon}`;
+}
+
+function getMarkerStyle(location: MapLocation, mapScale: number): MarkerStyle {
+  const scale = Math.max(mapScale, MIN_SCALE);
+
+  const screenSize = Math.max(MARKER_MIN_SIZE, MARKER_BASE_SIZE - 2 * Math.log2(scale));
+
+  const markerScale = screenSize / (MARKER_BASE_SIZE * scale);
+
+  const decorationScale = MARKER_BASE_SIZE / screenSize;
+
+  const hitSize = Math.max(MARKER_HIT_SIZE, screenSize) / (markerScale * scale);
+
+  return {
+    left: `${location.x}%`,
+    top: `${location.y}%`,
+
+    "--marker-scale": markerScale,
+    "--marker-hit-size": `${hitSize}px`,
+    "--marker-border-width": `${2 * decorationScale}px`,
+    "--marker-shadow-offset": `${2 * decorationScale}px`,
+    "--marker-shadow-blur": `${6 * decorationScale}px`,
+  };
+}
+
+function getPendingMarkerStyle(location: PendingLocation, mapScale: number): PendingMarkerStyle {
+  return {
+    left: `${location.x}%`,
+    top: `${location.y}%`,
+    "--pending-scale": 1 / Math.max(mapScale, MIN_SCALE),
+  };
 }
 
 export function CityMap() {
+  const dispatch = useAppDispatch();
+  const userLocationsState = useAppSelector((state) => state.mapLocations);
+  const allLocations = useAppSelector(selectMapLocations);
+  const notes = useAppSelector((state) => state.notes.items);
+  const notesReadOnly = useAppSelector((state) => state.notes.readOnly);
+  const [params] = useSearchParams();
+  const requestedPlace = params.get('place');
+  const focusedPlace = useRef<string | null>(null);
+  const transformRef = useRef<ReactZoomPanPinchRef>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const fullscreenButtonRef = useRef<HTMLButtonElement>(null);
+  const panelButtonRef = useRef<HTMLButtonElement>(null);
+  const pointerStart = useRef<{ x: number; y: number } | null>(null);
+  const dragged = useRef(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const compact = useMediaQuery('(max-width: 767px), (max-width: 1100px) and (orientation: portrait)');
+  const reducedMotion = useReducedMotion();
+  const fullscreenTrap = useFocusTrap(isExpanded);
+  const panelTrap = useFocusTrap(Boolean(compact && panelOpen));
   const [selected, setSelected] = useState<MapLocation | null>(null);
+
   const [query, setQuery] = useState("");
   const [activeType, setActiveType] = useState<MapLocationType | "all">("all");
+
+  const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   const [imageRetry, setImageRetry] = useState(0);
+
   const [mapScale, setMapScale] = useState(1);
-  const [userLocationsState, setUserLocationsState] = useState(loadUserLocations);
+
   const [isAddingLocation, setIsAddingLocation] = useState(false);
   const [pendingLocation, setPendingLocation] = useState<PendingLocation | null>(null);
+
   const [newLocationName, setNewLocationName] = useState("");
   const [newLocationDescription, setNewLocationDescription] = useState("");
   const [newLocationType, setNewLocationType] = useState<MapLocationType>("other");
 
-  const allLocations = useMemo(
-    () => [...locations, ...userLocationsState.locations],
-    [userLocationsState.locations],
-  );
+  const linkedNotes = useMemo(() => notes.filter((note) => note.locationId === selected?.id)
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)), [notes, selected?.id]);
+
+  const commitLocations = (next: MapLocation[]) => {
+    try {
+      saveUserLocations(next);
+      dispatch(mapLocationsSaved(next));
+      return true;
+    } catch (error) {
+      console.error("Не удалось сохранить метки:", error);
+
+      dispatch(mapLocationsSaveFailed("Не удалось сохранить изменения в этом браузере. Попробуйте ещё раз; прежние метки сохранены."));
+      return false;
+    }
+  };
+
+  const lockPage = isExpanded || Boolean(compact && panelOpen);
+  useEffect(() => {
+    if (!lockPage) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = previousOverflow; };
+  }, [lockPage]);
+
+  const closePanel = () => {
+    setPanelOpen(false);
+    panelButtonRef.current?.focus({ preventScroll: true });
+  };
 
   useEffect(() => {
-    if (!userLocationsState.ready) return;
+    const escape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      if (panelOpen && compact) {
+        setPanelOpen(false);
+        panelButtonRef.current?.focus({ preventScroll: true });
+      } else if (isExpanded) {
+        setIsExpanded(false);
+        fullscreenButtonRef.current?.focus({ preventScroll: true });
+      }
+    };
+    document.addEventListener('keydown', escape);
+    return () => document.removeEventListener('keydown', escape);
+  }, [isExpanded, panelOpen, compact]);
 
-    try {
-      saveUserLocations(userLocationsState.locations);
-    } catch (error) {
-      console.error("Не удалось сохранить пользовательские метки карты.", error);
-      setUserLocationsState((state) => ({
-        ...state,
-        ready: false,
-        error: "Не удалось сохранить метки в этом браузере.",
-      }));
-    }
-  }, [userLocationsState.locations, userLocationsState.ready]);
+  const focusLocation = useCallback((location: Pick<MapLocation, 'x' | 'y'>) => {
+    const map = mapRef.current;
+    const viewport = viewportRef.current;
+    const api = transformRef.current;
+    if (!map || !viewport || !api || imageLoading || imageError) return;
+    const scale = Math.max(4, api.state.scale);
+    void api.setTransform(
+      viewport.clientWidth / 2 - location.x / 100 * map.offsetWidth * scale,
+      viewport.clientHeight / 2 - location.y / 100 * map.offsetHeight * scale,
+      scale, reducedMotion ? 0 : 350,
+    );
+  }, [imageLoading, imageError, reducedMotion]);
+
+  useEffect(() => {
+    if (!requestedPlace) { focusedPlace.current = null; return; }
+    if (imageLoading || imageError || focusedPlace.current === requestedPlace) return;
+    const place = allLocations.find((location) => location.id === requestedPlace);
+    if (!place) return;
+    const frame = requestAnimationFrame(() => {
+      focusedPlace.current = requestedPlace;
+      setSelected(place);
+      setQuery(''); setActiveType('all');
+      focusLocation(place);
+      viewportRef.current?.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'instant' : 'smooth' });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [requestedPlace, allLocations, imageLoading, imageError, focusLocation, reducedMotion]);
 
   const filteredLocations = useMemo(() => {
-    const normalizedQuery = query.trim().toLocaleLowerCase("ru");
+    const search = query.trim().toLocaleLowerCase("ru");
 
     return allLocations.filter((location) => {
       const matchesType = activeType === "all" || location.type === activeType;
-      const matchesQuery =
-        !normalizedQuery ||
-        `${location.name} ${location.description}`
-          .toLocaleLowerCase("ru")
-          .includes(normalizedQuery);
 
-      return matchesType && matchesQuery;
+      const matchesSearch =
+        !search ||
+        `${location.name} ${location.description}`.toLocaleLowerCase("ru").includes(search);
+
+      return matchesType && matchesSearch;
     });
-  }, [activeType, allLocations, query]);
+  }, [allLocations, activeType, query]);
 
   const availableTypes = useMemo(
-    (): MapLocationType[] => [...new Set(allLocations.map((location) => location.type))],
+    () => [...new Set(allLocations.map((location) => location.type))],
     [allLocations],
   );
 
-  const markerSize = Math.max(0.1, 2 - (mapScale - 1) * 0.4);
+  const handleRetryImage = () => {
+    setImageLoading(true);
+    setImageError(false);
+    setImageRetry((current) => current + 1);
+  };
+
+  const handleSelectLocation = (location: MapLocation) => {
+    if (isAddingLocation || pendingLocation) return;
+
+    setPendingLocation(null);
+    setSelected(location);
+    focusLocation(location);
+    setPanelOpen(false);
+    if (compact) viewportRef.current?.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'instant' : 'smooth' });
+  };
 
   const handleMapClick = (event: ReactMouseEvent<HTMLDivElement>) => {
-    if (!isAddingLocation || imageError) return;
-    if (event.target instanceof Element && event.target.closest("button")) return;
+    if (!isAddingLocation || imageError || imageLoading || dragged.current) return;
 
-    const mapBounds = event.currentTarget.getBoundingClientRect();
-    const x = ((event.clientX - mapBounds.left) / mapBounds.width) * 100;
-    const y = ((event.clientY - mapBounds.top) / mapBounds.height) * 100;
+    if (event.target instanceof Element && event.target.closest("button")) {
+      return;
+    }
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+
+    if (bounds.width === 0 || bounds.height === 0) return;
+
+    const x = ((event.clientX - bounds.left) / bounds.width) * 100;
+
+    const y = ((event.clientY - bounds.top) / bounds.height) * 100;
 
     setPendingLocation({
       x: Math.min(100, Math.max(0, Number(x.toFixed(2)))),
       y: Math.min(100, Math.max(0, Number(y.toFixed(2)))),
     });
-    setNewLocationName("");
-    setNewLocationDescription("");
-    setNewLocationType("other");
+
+    if (!editingId && !pendingLocation) {
+      setNewLocationName("");
+      setNewLocationDescription("");
+      setNewLocationType("other");
+    }
+    setIsAddingLocation(false);
+    setPanelOpen(true);
   };
 
   const handleCreateLocation = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!pendingLocation) return;
+
+    if (!pendingLocation || !userLocationsState.ready) return;
+
+    const name = newLocationName.trim();
+
+    if (!name) return;
 
     const newLocation: MapLocation = {
-      id: `user-${crypto.randomUUID()}`,
-      name: newLocationName.trim(),
+      id: editingId ?? `user-${crypto.randomUUID()}`,
+      name,
       description: newLocationDescription.trim(),
       ...pendingLocation,
       type: newLocationType,
       source: "user",
     };
 
-    setUserLocationsState((state) => ({
-      ...state,
-      locations: [...state.locations, newLocation],
-    }));
+    const next = editingId
+      ? userLocationsState.locations.map((location) => location.id === editingId ? newLocation : location)
+      : [...userLocationsState.locations, newLocation];
+    if (!commitLocations(next)) return;
+
     setSelected(newLocation);
     setPendingLocation(null);
     setIsAddingLocation(false);
+    setEditingId(null);
     setQuery("");
     setActiveType("all");
   };
 
   const handleDeleteLocation = (id: string) => {
-    setUserLocationsState((state) => ({
-      ...state,
-      locations: state.locations.filter((location) => location.id !== id),
-    }));
+    if (!commitLocations(userLocationsState.locations.filter((location) => location.id !== id))) return;
+
     setSelected(null);
   };
 
+  const handleEditLocation = (location: MapLocation) => {
+    setEditingId(location.id);
+    setPendingLocation({ x: location.x, y: location.y });
+    setNewLocationName(location.name);
+    setNewLocationDescription(location.description);
+    setNewLocationType(location.type);
+    setIsAddingLocation(false);
+    setPanelOpen(true);
+  };
+
+  const cancelEditing = () => {
+    setPendingLocation(null);
+    setEditingId(null);
+    setIsAddingLocation(false);
+  };
+
+  const handleToggleAdding = () => {
+    setIsAddingLocation((current) => !current);
+    setPendingLocation(null);
+    setSelected(null);
+    setEditingId(null);
+    setPanelOpen(false);
+    if (compact) viewportRef.current?.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'instant' : 'smooth' });
+  };
+
   return (
-    <section className={styles.layout} aria-label="Интерактивная карта">
+    <section ref={fullscreenTrap} className={styles.layout} data-expanded={isExpanded}
+      role={isExpanded ? 'dialog' : undefined} aria-modal={isExpanded || undefined}
+      aria-label="Интерактивная карта Вотердипа">
+      {requestedPlace && !allLocations.some((location) => location.id === requestedPlace) &&
+        <p className={styles.missingPlace} role="status">Место удалено или недоступно в этом браузере. Другие места карты доступны.</p>}
       <TransformWrapper
-        initialScale={1}
-        minScale={1}
-        maxScale={5}
+        ref={transformRef}
+        initialScale={MIN_SCALE}
+        minScale={MIN_SCALE}
+        maxScale={MAX_SCALE}
         centerOnInit
         limitToBounds
-        onTransform={(_, state) => setMapScale(state.scale)}
+        panning={{ excluded: ['button', 'input', 'select', 'textarea'] }}
+        doubleClick={{ disabled: isAddingLocation, excluded: ['button'] }}
+        onPinchStart={() => { dragged.current = true; }}
+        onTransform={(_, state) => {
+          setMapScale(state.scale);
+        }}
       >
         {({ zoomIn, zoomOut, resetTransform }) => (
           <div className={styles.viewer}>
@@ -167,28 +347,41 @@ export function CityMap() {
                 <p className={styles.mapEyebrow}>Картографический атлас</p>
                 <p className={styles.mapTitle}>План города</p>
               </div>
+
               <div className={styles.toolbarActions}>
+                <button ref={panelButtonRef} className={styles.placesButton} type="button" aria-expanded={panelOpen}
+                  aria-controls="map-places-panel" onClick={() => setPanelOpen((current) => !current)}>
+                  Места · {allLocations.length}
+                </button>
                 <Group className={styles.controls} gap={6}>
                   <ActionIcon
                     className={styles.control}
-                    onClick={() => zoomOut()}
+                    onClick={() => zoomOut(0.5)}
                     aria-label="Отдалить карту"
                     title="Отдалить"
                   >
                     −
                   </ActionIcon>
+                  <ActionIcon ref={fullscreenButtonRef} className={styles.control}
+                    onClick={() => setIsExpanded((current) => !current)}
+                    aria-label={isExpanded ? 'Свернуть карту' : 'Развернуть карту на весь экран'}
+                    title={isExpanded ? 'Свернуть (Esc)' : 'На весь экран'} aria-pressed={isExpanded}>
+                    {isExpanded ? '⤡' : '⤢'}
+                  </ActionIcon>
+
                   <ActionIcon
                     className={styles.control}
-                    onClick={() => zoomIn()}
+                    onClick={() => zoomIn(0.5)}
                     aria-label="Приблизить карту"
                     title="Приблизить"
                   >
                     +
                   </ActionIcon>
+
                   <ActionIcon
                     className={styles.control}
                     onClick={() => resetTransform()}
-                    aria-label="Сбросить масштаб и положение карты"
+                    aria-label="Сбросить масштаб"
                     title="Сбросить"
                   >
                     ⌖
@@ -197,16 +390,22 @@ export function CityMap() {
               </div>
             </div>
 
-            <div className={styles.mapViewport}>
+            <div ref={viewportRef} className={styles.mapViewport}>
+              {imageLoading && !imageError && (
+                <div className={styles.mapLoading} role="status">
+                  <Loader color="yellow" size="lg" />
+                  <Text c="white" size="sm">
+                    Загружаем карту Вотердипа...
+                  </Text>
+                </div>
+              )}
+
               {imageError && (
                 <div className={styles.mapError} role="alert">
                   <strong>Не удалось загрузить карту</strong>
-                  <span>Проверьте, что файл доступен в public/maps/waterdeep.jpg.</span>
-                  <button
-                    className={styles.retryButton}
-                    onClick={() => setImageRetry((attempt) => attempt + 1)}
-                    type="button"
-                  >
+                  <span>Проверь файл public/maps/waterdeep.svg</span>
+
+                  <button type="button" className={styles.retryButton} onClick={handleRetryImage}>
                     Повторить загрузку
                   </button>
                 </div>
@@ -214,22 +413,41 @@ export function CityMap() {
 
               <TransformComponent wrapperClass={styles.mapWrapper} contentClass={styles.mapContent}>
                 <div
+                  ref={mapRef}
                   className={styles.map}
                   data-error={imageError}
                   data-adding={isAddingLocation}
                   onClick={handleMapClick}
+                  onPointerDown={(event) => {
+                    if (!event.isPrimary) { dragged.current = true; return; }
+                    pointerStart.current = { x: event.clientX, y: event.clientY };
+                    dragged.current = false;
+                  }}
+                  onPointerMove={(event) => {
+                    const start = pointerStart.current;
+                    if (start && Math.hypot(event.clientX - start.x, event.clientY - start.y) > 6) dragged.current = true;
+                  }}
+                  onPointerUp={() => { pointerStart.current = null; }}
+                  onPointerCancel={() => { dragged.current = true; pointerStart.current = null; }}
                 >
                   <img
                     key={imageRetry}
-                    src={`${import.meta.env.BASE_URL}maps/waterdeep.jpg?attempt=${imageRetry}`}
+                    src={`${MAP_IMAGE}?attempt=${imageRetry}`}
                     alt="Подробная карта города Вотердип"
                     className={styles.image}
                     draggable={false}
-                    onError={() => setImageError(true)}
-                    onLoad={() => setImageError(false)}
+                    onLoad={() => {
+                      setImageLoading(false);
+                      setImageError(false);
+                    }}
+                    onError={() => {
+                      setImageLoading(false);
+                      setImageError(true);
+                    }}
                   />
 
                   {!imageError &&
+                    !imageLoading &&
                     filteredLocations.map((location) => (
                       <button
                         key={location.id}
@@ -237,48 +455,48 @@ export function CityMap() {
                         className={styles.marker}
                         data-type={location.type}
                         data-selected={selected?.id === location.id}
-                        style={
-                          {
-                            left: `${location.x}%`,
-                            top: `${location.y}%`,
-                            width: `${markerSize}rem`,
-                            height: `${markerSize}rem`,
-                            color: locationTypes[location.type].color,
-                            "--marker-hit-size": `${3.5 / mapScale}rem`,
-                          } as CSSProperties & { "--marker-hit-size": string }
-                        }
+                        style={getMarkerStyle(location, mapScale)}
                         aria-label={`${location.name}, ${locationTypes[location.type].label}`}
                         aria-pressed={selected?.id === location.id}
-                        onClick={() => setSelected(location)}
+                        onClick={() => handleSelectLocation(location)}
                       >
-                        <svg className={styles.markerIcon} viewBox="0 0 24 24" aria-hidden="true">
-                          <path d={markerIcons[location.type]} />
-                        </svg>
+                        <img
+                          src={getMarkerIcon(location.type)}
+                          alt=""
+                          aria-hidden="true"
+                          className={styles.markerIcon}
+                          draggable={false}
+                        />
                       </button>
                     ))}
+
                   {pendingLocation && (
                     <span
                       className={styles.pendingMarker}
-                      aria-label="Новая метка"
-                      style={{
-                        left: `${pendingLocation.x}%`,
-                        top: `${pendingLocation.y}%`,
-                      }}
+                      style={getPendingMarkerStyle(pendingLocation, mapScale)}
                     />
                   )}
                 </div>
               </TransformComponent>
             </div>
+
             <p className={styles.mapHint}>
               {isAddingLocation
-                ? "Нажмите или коснитесь карты, чтобы выбрать место для новой метки."
-                : "Перетаскивайте карту, используйте масштаб или включите добавление метки."}
+                ? editingId ? "Выберите новое положение метки. Перетаскивание карты не меняет её положение." : "Коснитесь карты, чтобы выбрать место для новой метки."
+                : "Перетаскивайте карту и изменяйте масштаб."}
+              {isAddingLocation && <button className={styles.cancelPicking} type="button" onClick={cancelEditing}>Отмена</button>}
             </p>
+            {selected && !pendingLocation && <button type="button" className={styles.selectedPlace}
+              onClick={() => setPanelOpen(true)} aria-controls="map-places-panel">
+              {selected.name} <span>Подробнее ›</span>
+            </button>}
           </div>
         )}
       </TransformWrapper>
 
-      <aside className={styles.sidebar} aria-label="Места на карте">
+      {compact && panelOpen && <button type="button" className={styles.panelBackdrop} aria-label="Закрыть список мест" onClick={closePanel} />}
+      <aside ref={panelTrap} id="map-places-panel" className={styles.sidebar} data-open={panelOpen}
+        role={compact && panelOpen ? 'dialog' : undefined} aria-modal={compact && panelOpen || undefined} aria-label="Места на карте">
         <div className={styles.sidebarHeader}>
           <div>
             <p className={styles.sidebarEyebrow}>Путеводитель</p>
@@ -286,19 +504,18 @@ export function CityMap() {
               Известные места
             </Title>
           </div>
+
           <span className={styles.locationCount} aria-label={`Мест: ${filteredLocations.length}`}>
             {filteredLocations.length}
           </span>
+          <button type="button" className={styles.panelClose} onClick={closePanel} aria-label="Закрыть места">×</button>
         </div>
 
         <button
           className={styles.sidebarAddButton}
           data-active={isAddingLocation}
-          onClick={() => {
-            setIsAddingLocation((adding) => !adding);
-            setPendingLocation(null);
-            setSelected(null);
-          }}
+          disabled={!userLocationsState.ready}
+          onClick={handleToggleAdding}
           type="button"
         >
           {isAddingLocation ? "Отменить добавление" : "＋ Поставить метку на карте"}
@@ -313,6 +530,7 @@ export function CityMap() {
         <label className={styles.searchLabel} htmlFor="map-location-search">
           Найти место
         </label>
+
         <input
           id="map-location-search"
           className={styles.search}
@@ -337,16 +555,17 @@ export function CityMap() {
           >
             Все места
           </button>
+
           {availableTypes.map((type) => (
             <button
+              key={type}
+              type="button"
               className={styles.filter}
               data-active={activeType === type}
-              key={type}
               onClick={() => {
                 setActiveType(type);
                 setSelected(null);
               }}
-              type="button"
             >
               {locationTypes[type].label}
             </button>
@@ -357,24 +576,26 @@ export function CityMap() {
           {filteredLocations.length > 0 ? (
             filteredLocations.map((location) => (
               <button
+                key={location.id}
                 className={styles.locationItem}
                 data-selected={selected?.id === location.id}
-                key={location.id}
-                onClick={() => setSelected(location)}
+                onClick={() => handleSelectLocation(location)}
                 type="button"
               >
-                <span
-                  className={styles.locationGlyph}
-                  data-type={location.type}
-                  style={{ backgroundColor: locationTypes[location.type].color }}
-                  aria-hidden="true"
-                >
-                  ✦
+                <span className={styles.locationGlyph} aria-hidden="true">
+                  <img
+                    src={getMarkerIcon(location.type)}
+                    alt=""
+                    className={styles.locationGlyphIcon}
+                  />
                 </span>
+
                 <span className={styles.locationCopy}>
                   <span className={styles.locationName}>{location.name}</span>
+
                   <span className={styles.locationType}>{locationTypes[location.type].label}</span>
                 </span>
+
                 <span className={styles.locationArrow} aria-hidden="true">
                   ›
                 </span>
@@ -391,10 +612,11 @@ export function CityMap() {
           {pendingLocation ? (
             <form className={styles.locationForm} onSubmit={handleCreateLocation}>
               <div className={styles.detailTopline}>
-                <span className={styles.detailType}>Новая метка</span>
+                <span className={styles.detailType}>{editingId ? 'Редактирование метки' : 'Новая метка'}</span>
+
                 <ActionIcon
                   className={styles.closeButton}
-                  onClick={() => setPendingLocation(null)}
+                  onClick={cancelEditing}
                   aria-label="Отменить выбор точки"
                   title="Отменить"
                   type="button"
@@ -402,9 +624,11 @@ export function CityMap() {
                   ×
                 </ActionIcon>
               </div>
+
               <label className={styles.formLabel} htmlFor="map-location-name">
                 Название
               </label>
+
               <input
                 autoFocus
                 required
@@ -415,16 +639,21 @@ export function CityMap() {
                 onChange={(event) => setNewLocationName(event.currentTarget.value)}
                 placeholder="Например, Улица Фонарей"
               />
+
               <label className={styles.formLabel} htmlFor="map-location-type">
                 Тип места
               </label>
+
               <select
                 id="map-location-type"
                 className={styles.search}
                 value={newLocationType}
                 onChange={(event) => {
                   const type = event.currentTarget.value;
-                  if (type in locationTypes) setNewLocationType(type as MapLocationType);
+
+                  if (type in locationTypes) {
+                    setNewLocationType(type as MapLocationType);
+                  }
                 }}
               >
                 {Object.entries(locationTypes).map(([type, category]) => (
@@ -433,9 +662,11 @@ export function CityMap() {
                   </option>
                 ))}
               </select>
+
               <label className={styles.formLabel} htmlFor="map-location-description">
                 Заметка
               </label>
+
               <textarea
                 id="map-location-description"
                 className={styles.textarea}
@@ -445,14 +676,21 @@ export function CityMap() {
                 onChange={(event) => setNewLocationDescription(event.currentTarget.value)}
                 placeholder="Что важно помнить об этом месте?"
               />
+
               <button className={styles.saveLocationButton} type="submit">
-                Сохранить метку
+                {editingId ? 'Сохранить изменения' : 'Сохранить метку'}
               </button>
+              <p className={styles.coordinates}>Точка: {pendingLocation.x}% · {pendingLocation.y}%</p>
+              <button className={styles.editLocationButton} type="button" onClick={() => {
+                setIsAddingLocation(true); setPanelOpen(false);
+                if (compact) viewportRef.current?.scrollIntoView({ block: 'nearest' });
+              }}>Выбрать другое место на карте</button>
             </form>
           ) : selected ? (
             <>
               <div className={styles.detailTopline}>
                 <span className={styles.detailType}>{locationTypes[selected.type].label}</span>
+
                 <ActionIcon
                   className={styles.closeButton}
                   onClick={() => setSelected(null)}
@@ -462,9 +700,30 @@ export function CityMap() {
                   ×
                 </ActionIcon>
               </div>
+
               <h3 className={styles.detailTitle}>{selected.name}</h3>
+
               <p className={styles.detailDescription}>{selected.description}</p>
-              {selected.source === "user" && (
+
+              <section className={styles.linkedNotes} aria-label="Заметки об этом месте">
+                <h4>Заметки о месте · {linkedNotes.length}</h4>
+                {linkedNotes.length > 0 ? <ul>
+                  {linkedNotes.slice(0, 3).map((note) => <li key={note.id}>
+                    <Link to={`${routes.notes}?place=${encodeURIComponent(selected.id)}&note=${encodeURIComponent(note.id)}`}>
+                      <span className={styles.notePriority} data-priority={note.priority} aria-label={`${priorities[note.priority]} приоритет`} />
+                      {note.title}
+                    </Link>
+                  </li>)}
+                </ul> : <p>Здесь пока нет записей.</p>}
+                <div className={styles.linkedNoteActions}>
+                  {!notesReadOnly && <Link to={`${routes.notes}?place=${encodeURIComponent(selected.id)}&new=1`}>＋ Добавить запись</Link>}
+                  {linkedNotes.length > 0 && <Link to={`${routes.notes}?place=${encodeURIComponent(selected.id)}`}>Все записи →</Link>}
+                </div>
+              </section>
+
+              {selected.source === "user" && userLocationsState.ready && (
+                <div className={styles.detailActions}>
+                <button className={styles.editLocationButton} onClick={() => handleEditLocation(selected)} type="button">Редактировать метку</button>
                 <button
                   className={styles.deleteLocationButton}
                   onClick={() => handleDeleteLocation(selected.id)}
@@ -472,12 +731,13 @@ export function CityMap() {
                 >
                   Удалить мою метку
                 </button>
+                </div>
               )}
             </>
           ) : (
             <p className={styles.detailPrompt}>
               {isAddingLocation
-                ? "Коснитесь карты в нужном месте. Название улицы или точки можно добавить по-русски."
+                ? "Коснитесь карты в нужном месте. Название можно добавить по-русски."
                 : "Выберите отметку на карте или место из списка."}
             </p>
           )}

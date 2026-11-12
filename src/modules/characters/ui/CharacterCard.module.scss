@@ -1,0 +1,104 @@
+.card {
+  min-width: 0;
+  overflow: hidden;
+  align-self: start;
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  background: var(--color-surface);
+  box-shadow: 0 0.5rem 1.5rem rgb(35 42 35 / 5%);
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-height: 10rem;
+  padding: 1.25rem;
+  color: #f7f3e9;
+  background: radial-gradient(ellipse at top right, #465342, transparent), #26352b;
+}
+
+.portrait {
+  display: grid;
+  flex: 0 0 4rem;
+  width: 4rem;
+  height: 5.25rem;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgb(215 183 119 / 45%);
+  border-radius: 2rem 2rem 0.5rem 0.5rem;
+  background: #364338;
+  color: var(--color-accent);
+  font: 1.5rem Georgia, serif;
+
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+.identityText {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  h2 { margin: 0.25rem 0 0.5rem; font: 500 1.45rem/1.12 Georgia, serif; }
+}
+
+.eyebrow { margin: 0; color: #d7b777; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.className { margin: 0; font-size: 0.85rem; }
+.subclass { margin: 0.35rem 0 0; color: #c6ccc3; font-size: 0.75rem; line-height: 1.5; }
+.body { padding: 1rem; }
+.combat {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  > div { padding: 0.7rem; border-radius: 0.5rem; background: var(--color-surface-muted); }
+  dt { color: var(--color-muted); font-size: 0.7rem; }
+  dd { margin: 0.2rem 0 0; font-size: 1.25rem; font-weight: 650; font-variant-numeric: tabular-nums; }
+  dd span { color: var(--color-muted); font-size: 0.8rem; font-weight: 400; }
+  .health { background: #e8ede3; color: #35543c; }
+}
+
+.temporary { margin: 0.5rem 0; font-size: 0.8rem; color: #35543c; }
+.abilities {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin: 1rem 0;
+  > div { min-width: 0; padding: 0.65rem 0.1rem; border: 1px solid var(--color-border); border-radius: 0.5rem; text-align: center; }
+  dt { font-size: 0.6rem; color: var(--color-muted); }
+  dd { display: flex; align-items: center; justify-content: center; gap: 0.35rem; margin: 0.3rem 0 0; font-size: 1.1rem; font-weight: 650; }
+  dd span { border-radius: 0.3rem; padding: 0.15rem 0.25rem; background: #edf0e9; color: #42583e; font-size: 0.7rem; }
+}
+.metadata { display: flex; flex-wrap: wrap; gap: 0.5rem 0.8rem; margin: 0 0 1rem; color: var(--color-muted); font-size: 0.72rem; line-height: 1.6; }
+.metadata strong { color: var(--color-forest); }
+.sections { border-top: 1px solid var(--color-border); }
+.section {
+  border-bottom: 1px solid var(--color-border);
+  summary { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; min-height: 48px; padding: 0.75rem 0; font-size: 0.82rem; font-weight: 600; cursor: pointer; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary:focus-visible { outline: 2px solid #7a663b; outline-offset: 2px; border-radius: 0.25rem; }
+  &[open] .chevron { transform: rotate(45deg); }
+}
+.chevron { color: #817350; font-size: 1rem; }
+.sectionBody { padding-bottom: 1rem; overflow-wrap: anywhere; }
+.listTitle { margin: 0.75rem 0 0.4rem; color: var(--color-muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.statList {
+  margin: 0;
+  > div { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.45rem 0; border-bottom: 1px solid #efebe1; }
+  dt { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; font-size: 0.78rem; }
+  dd { flex-shrink: 0; margin: 0; color: var(--color-forest); font-size: 0.85rem; font-weight: 650; }
+}
+.badge { color: #67785b; font-size: 0.58rem; background: #eff1e8; padding: 0.15rem 0.25rem; border-radius: 0.2rem; }
+.weapon {
+  padding: 0.75rem 0;
+  + .weapon { border-top: 1px solid var(--color-border); }
+  h3 { margin: 0; font-size: 0.85rem; }
+  p { margin: 0.35rem 0 0; font-size: 0.78rem; line-height: 1.6; white-space: pre-line; }
+  .damage { color: #6d5935; }
+}
+.paragraphs { font-size: 0.8rem; line-height: 1.7; p { margin: 0.6rem 0 0; white-space: pre-line; } }
+.source { margin: 1rem 0 0; color: var(--color-muted); font-size: 0.63rem; line-height: 1.5; }
+
+@media (max-width: 639px) {
+  .identity { padding: 1.15rem; }
+  .identityText h2 { font-size: 1.6rem; }
+  .body { padding: 1rem; }
+}

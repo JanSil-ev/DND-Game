@@ -1,0 +1,13 @@
+@media (min-width: 768px) and (max-width: 1366px) and (orientation: landscape) {
+  .page.page {
+    width: 100%;
+    padding: 1rem;
+    > header {
+      padding: 1rem 1.25rem;
+      h1 { font-size: 2rem; }
+      p { margin-top: 0.4rem; }
+      > span { margin-top: 0.65rem; }
+    }
+    > div { padding-top: 1rem; }
+  }
+}

@@ -9,6 +9,7 @@ const mapLocationTypes: MapLocationType[] = [
   'dungeon',
   'temple',
   'tavern',
+  'alchemy',
   'other',
 ];
 
@@ -43,7 +44,8 @@ export function readUserLocations(): MapLocation[] {
     throw new Error('В сохранённых метках карты обнаружены некорректные данные.');
   }
 
-  return parsedLocations;
+  // Old exports may omit source; every entry in this storage belongs to the user.
+  return parsedLocations.map((location) => ({ ...location, source: 'user' }));
 }
 
 export function saveUserLocations(locations: MapLocation[]): void {

@@ -3,6 +3,7 @@ import { PageHeading } from '../PageHeading/PageHeading';
 import styles from './PageFrame.module.scss';
 
 interface PageFrameProps extends PropsWithChildren {
+  className?: string;
   description: string;
   eyebrow: string;
   title: string;
@@ -10,12 +11,13 @@ interface PageFrameProps extends PropsWithChildren {
 
 export function PageFrame({
   children,
+  className,
   description,
   eyebrow,
   title,
 }: PageFrameProps) {
   return (
-    <section className={styles.page} aria-label={title}>
+    <section className={[styles.page, className].filter(Boolean).join(' ')} aria-label={title}>
       <PageHeading
         className={styles.header}
         description={description}
