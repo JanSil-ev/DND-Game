@@ -8,7 +8,7 @@ export function AppProviders({ children }: PropsWithChildren) {
   return (
     <MantineProvider defaultColorScheme="light">
       <Provider store={store}>
-        <BrowserRouter>{children}</BrowserRouter>
+        <BrowserRouter basename="/DND-Game">{children}</BrowserRouter>
       </Provider>
     </MantineProvider>
   );
